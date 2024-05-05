@@ -1,0 +1,130 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Merriweather:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	body {
+		@apply text-gray-950 bg-white;
+		@apply transition-colors duration-200;
+	}
+	code {
+		@apply bg-gray-500/30 rounded px-1 py-px text-purple-700 dark:text-purple-400/80 text-sm;
+	}
+	a {
+		@apply dark:text-primary-400 text-primary-700;
+		@apply hover:underline hover:underline-offset-4;
+	}
+	pre {
+		@apply bg-gray-200 dark:bg-gray-300/10 rounded-md p-4 block text-left;
+	}
+	pre code {
+		@apply bg-transparent text-gray-900 dark:text-white whitespace-break-spaces;
+	}
+}
+
+@layer components {
+}
+
+@layer utilities {
+}
+
+body.dark {
+	@apply text-gray-100 bg-gray-950;
+}
+
+/*
+ * Dark Mode Toggler
+ */
+.darkmode-toggle {
+	background: linear-gradient(135deg, rgba(93, 199, 225, 0.7) 30%, rgba(255, 222, 30, 0.7));
+	@apply inline-block rounded-full w-12 h-7 text-sm relative transition-all cursor-pointer;
+}
+.dark .darkmode-toggle {
+	background: linear-gradient(225deg, rgba(58, 182, 213, 0.3) 30%, rgba(116, 58, 213, 0.4));
+}
+.darkmode-toggle button {
+	@apply bg-white;
+	@apply w-[1.35rem] h-[1.35rem] rounded-full absolute p-0 border-none top-[0.2rem] shadow-sm
+    left-[0.175rem] pl-[0.175rem] transition-all ease-out duration-300;
+}
+.dark .darkmode-toggle button {
+	@apply left-[1.5rem];
+}
+
+/*
+ * Spinner
+ */
+.spinner {
+	--loader-size: 35px;
+	--loader-border-size: 3px;
+	--loader-border-color: white;
+	width: var(--loader-size);
+	height: var(--loader-size);
+	border: var(--loader-border-size) solid var(--loader-border-color);
+	border-top-color: transparent;
+	border-right-color: transparent;
+	border-bottom-color: transparent;
+	background-color: transparent;
+	border-radius: 50%;
+	position: relative;
+	animation: rotateX 1s infinite linear;
+	display: inline-block;
+}
+
+.spinner::before {
+	content: "";
+	border: var(--loader-border-size) solid var(--loader-border-color);
+	border-top-color: transparent;
+	border-left-color: transparent;
+	border-bottom-color: transparent;
+	background-color: transparent;
+	border-radius: 50%;
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	right: 2px;
+	bottom: 2px;
+	animation: rotateX 0.5s infinite linear reverse;
+}
+.spinner-xl {
+	--loader-size: 80px;
+	--loader-border-size: 6px;
+}
+.spinner-sm {
+	--loader-size: 25px;
+	--loader-border-size: 2px;
+}
+.spinner-md {
+	--loader-size: 50px;
+	--loader-border-size: 4px;
+}
+.spinner-lg {
+	--loader-size: 60px;
+	--loader-border-size: 5px;
+}
+.spinner-primary {
+	--loader-border-color: theme(colors.primary.600);
+}
+.spinner-danger {
+	--loader-border-color: theme(colors.red.600);
+}
+.spinner-white {
+	--loader-border-color: white;
+}
+.spinner-black {
+	--loader-border-color: black;
+}
+.spinner-gray {
+	--loader-border-color: theme(colors.gray.500);
+}
+
+@keyframes rotateX {
+	from {
+		transform: rotateZ(0deg);
+	}
+	to {
+		transform: rotateZ(360deg);
+	}
+}
