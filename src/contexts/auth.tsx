@@ -105,11 +105,13 @@ function useSignIn() {
 
 function useSignOut() {
 	const {user, setUser} = useAuth();
+	const [loading, setLoading] = useState<boolean>(false);
 
-	const signOut = async () => {
+	const signOut = useCallback(async () => {
 		if (!user) {
 			throw new Error("User is already signed out");
 		}
+		setLoading(true);
 		await axios
 			.post(
 				AUTH_BACKEND_URL + "/api/user/logout/",
@@ -123,25 +125,31 @@ function useSignOut() {
 			)
 			.then(() => {
 				setUser(null);
+				setLoading(false);
 			})
 			.catch((error) => {
 				setUser(null);
+				setLoading(false);
 				throw new Error(error);
 			});
-	};
+	}, [setUser, user]);
 
-	return {signOut};
+	return {signOut, loading};
 }
 
 function useRefresh() {
 	const {user, setUser} = useAuth();
+	const [loading, setLoading] = useState<boolean>(false);
+	const [isSuccess, setIsSuccess] = useState<boolean>(false);
+	const [error, setError] = useState<ErrorType | null>(null);
 
 	/**
 	 * If refresh fails, user is signed out
 	 * @returns {boolean}
 	 */
-	const refresh = async () => {
-		let success = false;
+	const refresh = useCallback(async () => {
+		setLoading(true);
+		setError(null);
 		await axios
 			.get(AUTH_BACKEND_URL + "/api/user/me/", {
 				headers: {
@@ -150,20 +158,26 @@ function useRefresh() {
 				withCredentials: true,
 			})
 			.then((response) => {
-				setUser({
+				const value = {
 					detail: response.data,
 					last_web_session: user?.last_web_session || null,
 					last_token_session: user?.last_token_session || null,
-				});
-				success = true;
+				};
+				setUser(value);
+				setLoading(false);
+				setIsSuccess(true);
 			})
-			.catch(() => {
+			.catch((err) => {
 				setUser(null);
+				setLoading(false);
+				setIsSuccess(false);
+				handleAxiosError(err, setError);
+				throw new Error(err);
 			});
-		return success;
-	};
+		return user;
+	}, [setUser, user]);
 
-	return {refresh};
+	return {refresh, user, loading, error, isSuccess};
 }
 
 export {AuthProvider, useAuth, useSignIn, useSignOut, useRefresh, SignedIn, SignedOut};
