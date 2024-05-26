@@ -3,5 +3,4 @@
  * are useful throughout the application.
  */
 
-export const BACKEND_ENDPOINT = "https://jsonplaceholder.typicode.com";
-export const FRONTEND_ENDPOINT = "http://localhost:3000";
+export const API_URL = import.meta.env.VITE_API_URL as string;
