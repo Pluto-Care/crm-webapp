@@ -76,7 +76,7 @@ function LoginForm({location}: {location?: Location<any>}) {
 			<SignedOut>
 				{mfaRequired ? (
 					<>
-						<EnterTotp loading={loading} sendToken={sendToken} />
+						<EnterTotp error={error?.title} loading={loading} sendToken={sendToken} />
 					</>
 				) : MFAJoinToken ? (
 					<>
@@ -212,6 +212,16 @@ function JoinMFA({mfa_join_token}: {mfa_join_token: string}) {
 						</span>
 						<p className="my-2">OR use the key below</p>
 						<Input disabled className="text-foreground" type="text" value={join_query.data.key} />
+						<p className="my-3">
+							Save these backup codes somewhere safe for when you cannot access 2FA codes
+						</p>
+						<div className="grid grid-cols-3 p-3 mb-6 border rounded text-muted-foreground">
+							{join_query.data.backup_codes.map((code) => (
+								<div key={code} className="p-1">
+									{code}{" "}
+								</div>
+							))}
+						</div>
 						<Form {...form}>
 							<form onSubmit={form.handleSubmit(onSubmit)}>
 								<div className="space-y-4">
@@ -296,7 +306,15 @@ function JoinMFA({mfa_join_token}: {mfa_join_token: string}) {
 	);
 }
 
-function EnterTotp({loading, sendToken}: {loading: boolean; sendToken: (token: string) => void}) {
+function EnterTotp({
+	error,
+	loading,
+	sendToken,
+}: {
+	error: string | undefined;
+	loading: boolean;
+	sendToken: (token: string) => void;
+}) {
 	// login form fields
 	const form = useForm<z.infer<typeof mfaTotpSchema>>({
 		resolver: zodResolver(mfaTotpSchema),
@@ -322,6 +340,14 @@ function EnterTotp({loading, sendToken}: {loading: boolean; sendToken: (token: s
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
 						<div className="space-y-4">
+							{/* TODO: This is essentially a hack to show error message */}
+							{error && !error.includes("required") && (
+								<Alert className="mt-6" variant="destructive">
+									<AlertCircle className="w-4 h-4" />
+									<AlertTitle>Error</AlertTitle>
+									<AlertDescription>{error}</AlertDescription>
+								</Alert>
+							)}
 							<FormField
 								control={form.control}
 								name="token"
@@ -331,7 +357,7 @@ function EnterTotp({loading, sendToken}: {loading: boolean; sendToken: (token: s
 										<FormControl>
 											<Input
 												disabled={loading}
-												type="number"
+												type="text"
 												className="tracking-widest"
 												{...field}
 											/>
