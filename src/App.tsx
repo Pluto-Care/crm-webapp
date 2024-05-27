@@ -11,13 +11,13 @@ import {
 import "@/assets/styles/global.css";
 import "@/assets/styles/icons.css";
 /* Components */
-import Home from "@/pages/_index";
+import LoginPage from "@/pages/Login";
 import {useAuth, useRefresh} from "@/contexts/auth";
 import Dashboard from "@/pages/dashboard/_index";
 import {useEffect} from "react";
 import {AlertCircle, Loader2} from "lucide-react";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
-import {AxiosRequestErrorDetail} from "@/lib/handleAxiosError";
+import {AxiosRequestErrorDetail, ErrorType} from "@/lib/handleAxiosError";
 
 export default function App() {
 	const {refresh, loading, error, isSuccess} = useRefresh();
@@ -30,10 +30,38 @@ export default function App() {
 
 	return !isSuccess && loading ? (
 		<div className="flex items-center justify-center min-h-screen">
-			{/* This loader is shown when user is being fetched */}
 			<Loader2 className="w-10 h-10 animate-spin" color={"#888888"} />
 		</div>
 	) : error && error.status === 0 ? (
+		<NetworkError error={error} />
+	) : (
+		<Router>
+			{/* In any other case, give access to routes */}
+			<Routes>
+				<Route path={"/"} element={<LoginPage />} />
+				{/* Protected Routes Start */}
+				<Route element={<ProtectedRoute />}>
+					<Route path={"/dashboard"} element={<Dashboard />} />
+				</Route>
+				{/* Protected Routes End */}
+			</Routes>
+		</Router>
+	);
+}
+
+const ProtectedRoute = ({redirectPath = "/"}) => {
+	const context = useAuth();
+	const location = useLocation();
+
+	if (!context.user) {
+		return <Navigate to={redirectPath} state={{redirectTo: location}} replace />;
+	}
+
+	return <Outlet />;
+};
+
+function NetworkError({error}: {error: ErrorType}) {
+	return (
 		<div className="flex items-center justify-center min-h-screen">
 			{/* This error occurs if network request fails. Possible cause is
 			inability to reach backend server */}
@@ -65,28 +93,5 @@ export default function App() {
 				</Alert>
 			</div>
 		</div>
-	) : (
-		<Router>
-			{/* In any other case, give access to routes */}
-			<Routes>
-				<Route path={"/"} element={<Home />} />
-				{/* Protected Routes Start */}
-				<Route element={<ProtectedRoute />}>
-					<Route path={"/dashboard"} element={<Dashboard />} />
-				</Route>
-				{/* Protected Routes End */}
-			</Routes>
-		</Router>
 	);
 }
-
-const ProtectedRoute = ({redirectPath = "/"}) => {
-	const context = useAuth();
-	const location = useLocation();
-
-	if (!context.user) {
-		return <Navigate to={redirectPath} state={{redirectTo: location}} replace />;
-	}
-
-	return <Outlet />;
-};

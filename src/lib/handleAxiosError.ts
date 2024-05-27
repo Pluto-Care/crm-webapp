@@ -17,13 +17,17 @@ export interface AxiosRequestErrorDetail {
 
 export function handleAxiosError(
 	error: AxiosError,
-	setReqError: Dispatch<SetStateAction<ErrorType | null>>
+	setReqError?: Dispatch<SetStateAction<ErrorType | null>>
 ) {
 	const msg = error.response?.data;
 	try {
 		const res = msg as ErrorType;
 		if (res) {
-			setReqError(res);
+			if (setReqError) {
+				setReqError(res);
+			} else {
+				return res;
+			}
 		} else {
 			throw new Error("Unknown error");
 		}
@@ -34,12 +38,17 @@ export function handleAxiosError(
 			method: error.config?.method,
 			withCredentials: error.config?.withCredentials,
 		};
-		setReqError({
+		const err_val = {
 			code: null,
 			detail: errorDetail,
 			instance: error.config?.url ?? "",
 			status: 0,
 			title: JSON.stringify(error.message).replaceAll('"', ""),
-		});
+		};
+		if (setReqError) {
+			setReqError(err_val);
+		} else {
+			return err_val;
+		}
 	}
 }

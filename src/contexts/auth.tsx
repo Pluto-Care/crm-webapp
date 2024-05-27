@@ -58,6 +58,8 @@ function useSignIn() {
 	const {user, setUser} = useAuth();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error, setError] = useState<ErrorType | null>(null);
+	const [MFAJoinToken, setMFAJoinToken] = useState<string | null>(null);
+	const [mfaRequired, setMFARequired] = useState<boolean>(false);
 
 	const signIn = useCallback(
 		async (email: string, password: string, token?: string) => {
@@ -81,26 +83,34 @@ function useSignIn() {
 					}
 				)
 				.then((response) => {
-					// Set Context
-					const value = {
-						detail: response.data.user,
-						last_web_session: response.data.last_session,
-						last_token_session: response.data.last_token_session,
-					};
-					setUser(value);
-					setLoading(false);
+					if (response.status === 202) {
+						setMFAJoinToken(response.data.mfa_join_token);
+						setLoading(false);
+					} else {
+						// Set Context
+						const value = {
+							detail: response.data.user,
+							last_web_session: response.data.last_session,
+							last_token_session: response.data.last_token_session,
+						};
+						setUser(value);
+						setLoading(false);
+					}
 				})
 				.catch((err) => {
+					if (err.response.status === 401) {
+						setMFARequired(true);
+					}
 					setLoading(false);
 					handleAxiosError(err, setError);
 					throw new Error(err);
 				});
 			return user;
 		},
-		[user, setError, setUser]
+		[user, setUser]
 	);
 
-	return {signIn, user, loading, error};
+	return {signIn, user, loading, error, MFAJoinToken, mfaRequired};
 }
 
 function useSignOut() {
