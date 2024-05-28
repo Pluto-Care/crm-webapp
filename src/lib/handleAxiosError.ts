@@ -2,7 +2,8 @@ import {AxiosError} from "axios";
 import {Dispatch, SetStateAction} from "react";
 
 export interface ErrorType {
-	code: null;
+	id: string;
+	code: string | null;
 	detail: string | {[key: string]: string | boolean | number | []} | AxiosRequestErrorDetail | null;
 	instance: string;
 	status: number;
@@ -44,6 +45,7 @@ export function handleAxiosError(
 			instance: error.config?.url ?? "",
 			status: 0,
 			title: JSON.stringify(error.message).replaceAll('"', ""),
+			id: "NetworkError",
 		};
 		if (setReqError) {
 			setReqError(err_val);

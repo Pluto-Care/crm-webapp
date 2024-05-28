@@ -7,12 +7,12 @@ import {QRCodeSVG} from "qrcode.react";
 import {Button} from "@/components/ui/button";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
-import {AlertCircle, CheckIcon, CircleX, CopyIcon, Loader2} from "lucide-react";
+import {AlertCircle, CheckIcon, CircleX, CircleXIcon, CopyIcon, Loader2} from "lucide-react";
 import {SignedIn, SignedOut, useAuth, useSignIn} from "@/contexts/auth";
 import {AuthUserLastTokenSessionType, AuthUserLastWebSessionType} from "@/types/auth";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 import {datePretty, timePretty, timeSince, weekDay} from "../../lib/dateTimeUtils";
-import {useCallback} from "react";
+import {useCallback, useState} from "react";
 import {useMutation, useQuery} from "@tanstack/react-query";
 import {mfaJoinAPI} from "@/services/api/mfa/initialize_totp";
 import {mfaEnableAPI} from "@/services/api/mfa/enable_totp";
@@ -24,14 +24,23 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import {AxiosError} from "axios";
+import {ErrorType, handleAxiosError} from "@/lib/handleAxiosError";
+import Logo from "@/assets/images/full-logo.svg";
 
 export default function LoginPage() {
 	const location = useLocation();
 
 	return (
 		<>
-			<div className="flex items-center justify-center min-h-screen">
+			<div className="flex flex-col items-center justify-center min-h-screen bg-zinc-50 dark:bg-zinc-950">
+				<div className="my-10">
+					<img src={Logo} alt="Logo" className="h-10 dark:invert dark:brightness-75" />
+				</div>
 				<LoginForm location={location} />
+				<div className="my-6 text-sm text-muted-foreground">
+					Copyright {new Date().getFullYear()}. All rights reserved.
+				</div>
 			</div>
 		</>
 	);
@@ -84,7 +93,7 @@ function LoginForm({location}: {location?: Location<any>}) {
 			<SignedOut>
 				{mfaRequired ? (
 					<>
-						<EnterTotp error={error?.title} loading={loading} sendToken={sendToken} />
+						<EnterTotp error={error} loading={loading} sendToken={sendToken} />
 					</>
 				) : MFAJoinToken ? (
 					<>
@@ -183,6 +192,8 @@ function LoginForm({location}: {location?: Location<any>}) {
 }
 
 function JoinMFA({mfa_join_token}: {mfa_join_token: string}) {
+	const [error, setError] = useState<ErrorType | null>(null);
+
 	const join_query = useQuery({
 		queryFn: () => mfaJoinAPI(mfa_join_token),
 		queryKey: ["mfa_join", mfa_join_token],
@@ -203,9 +214,9 @@ function JoinMFA({mfa_join_token}: {mfa_join_token: string}) {
 		onSuccess: () => {
 			// send to login form
 		},
-		onError: (err) => {
+		onError: (err: AxiosError) => {
 			console.log(err);
-			// handleAxiosError(err.r, setError)
+			handleAxiosError(err, setError);
 		},
 	});
 
@@ -217,59 +228,70 @@ function JoinMFA({mfa_join_token}: {mfa_join_token: string}) {
 
 	return join_query.isSuccess ? (
 		<>
-			<Card className="w-full max-w-lg">
-				<CardHeader>
-					<CardTitle>Two-Factor Authentication</CardTitle>
+			<Card className={(!mutation.isSuccess ? "max-w-3xl" : "max-w-lg") + " w-full"}>
+				<CardHeader className="flex flex-row gap-8">
+					<div className="flex-1">
+						<CardTitle>Two-Factor Authentication</CardTitle>
+						<CardDescription className="!mt-4 text-base leading-6">
+							{!mutation.isSuccess ? (
+								<>Scan the QR code in Google Authenticator or your choice of authenticator app.</>
+							) : (
+								<>MFA setup is complete. Login again to use the application!</>
+							)}
+						</CardDescription>
+						{!mutation.isSuccess && (
+							<>
+								<div className="relative mt-10 mb-8">
+									<div className="absolute inset-0 flex items-center">
+										<span className="w-full border-t" />
+									</div>
+									<div className="relative flex justify-center text-xs uppercase">
+										<span className="px-2 bg-background text-muted-foreground">
+											OR use the key below
+										</span>
+									</div>
+								</div>
+								<div className="relative max-w-sm">
+									<Input
+										readOnly
+										className="text-foreground"
+										type="text"
+										value={join_query.data.key}
+									/>
+									<Button
+										className="absolute top-0 right-0 scale-95 border-0"
+										variant={"outline"}
+										onClick={(e) => {
+											navigator.clipboard.writeText(join_query.data.key);
+											e.currentTarget.children[0].classList.add("hidden");
+											e.currentTarget.children[1].classList.remove("hidden");
+										}}
+									>
+										<CopyIcon className="w-4 h-4" />
+										<CheckIcon className="hidden w-4 h-4" />
+									</Button>
+								</div>
+							</>
+						)}
+					</div>
+					{!mutation.isSuccess && (
+						<div>
+							<span className="inline-block p-2 border rounded">
+								<QRCodeSVG value={join_query.data.provision} className="size-48 dark:invert" />
+							</span>
+						</div>
+					)}
 				</CardHeader>
 				<CardContent>
 					{!mutation.isSuccess ? (
 						<>
-							<p className="-mt-2 leading-6 text-muted-foreground">
-								Scan the below QR code into Google Authenticator or your choice of authenticator
-								app.
-							</p>
-							<br />
-							<div className="text-center">
-								<span className="inline-block p-2 border rounded">
-									<QRCodeSVG value={join_query.data.provision} className="size-48 dark:invert" />
-								</span>
-							</div>
-							<div className="relative my-4">
-								<div className="absolute inset-0 flex items-center">
-									<span className="w-full border-t" />
-								</div>
-								<div className="relative flex justify-center text-xs uppercase">
-									<span className="px-2 bg-background text-muted-foreground">
-										OR use the key below
-									</span>
-								</div>
-							</div>
-							<div className="relative">
-								<Input
-									readOnly
-									className="text-foreground"
-									type="text"
-									value={join_query.data.key}
-								/>
-								<Button
-									className="absolute top-0 right-0 scale-95 border-0"
-									variant={"outline"}
-									onClick={(e) => {
-										navigator.clipboard.writeText(join_query.data.key);
-										e.currentTarget.children[0].classList.add("hidden");
-										e.currentTarget.children[1].classList.remove("hidden");
-									}}
-								>
-									<CopyIcon className="w-4 h-4" />
-									<CheckIcon className="hidden w-4 h-4" />
-								</Button>
-							</div>
-							<p className="mb-2 leading-6">
+							<h6 className="my-2 font-medium">Backup Codes</h6>
+							<p className="!mt-0 mb-2 leading-6 text-muted-foreground">
 								Save these backup codes somewhere safe for when you cannot access 2FA codes
 							</p>
-							<div className="grid grid-cols-3 px-3 py-2 mb-6 border rounded text-muted-foreground">
+							<div className="grid grid-cols-6 px-3 py-2 mb-6 border rounded text-muted-foreground">
 								{join_query.data.backup_codes.map((code) => (
-									<div key={code} className="p-1">
+									<div key={code} className="p-1 font-mono text-sm">
 										{code}{" "}
 									</div>
 								))}
@@ -279,10 +301,13 @@ function JoinMFA({mfa_join_token}: {mfa_join_token: string}) {
 									<div className="space-y-4">
 										{mutation.isError && (
 											<Alert className="mt-6" variant="destructive">
-												<AlertCircle className="w-4 h-4" />
-												<AlertTitle>Error</AlertTitle>
+												<CircleXIcon className="w-4 h-4" />
+												<AlertTitle>{error?.title ?? "Error"}</AlertTitle>
 												<AlertDescription>
-													Some error has occurred. Try entering code again.
+													{error?.code === "InvalidTOTPToken" ||
+													error?.code === "InvalidTOTPTokenTooLong"
+														? (error?.detail as string)
+														: "Something went wrong"}
 												</AlertDescription>
 											</Alert>
 										)}
@@ -296,7 +321,7 @@ function JoinMFA({mfa_join_token}: {mfa_join_token: string}) {
 														<Input
 															disabled={mutation.isPending}
 															type="number"
-															className="tracking-widest"
+															className="tracking-[0.5em] max-w-64"
 															{...field}
 														/>
 													</FormControl>
@@ -315,9 +340,6 @@ function JoinMFA({mfa_join_token}: {mfa_join_token: string}) {
 						</>
 					) : (
 						<>
-							<p className="my-4 text-muted-foreground">
-								MFA setup is complete. Login again to use the application!
-							</p>
 							<Button
 								onClick={() => {
 									window.location.reload();
@@ -337,7 +359,7 @@ function JoinMFA({mfa_join_token}: {mfa_join_token: string}) {
 			<Loader2 className="w-10 h-10 animate-spin" color={"#888888"} />
 		</div>
 	) : join_query.isError ? (
-		<div className="w-full max-w-md my-12">
+		<div className="w-full max-w-md">
 			<Alert className="w-full">
 				<CircleX className="w-4 h-4 mt-1" />
 				<AlertTitle className="text-base">Something went wrong</AlertTitle>
@@ -364,7 +386,7 @@ function EnterTotp({
 	loading,
 	sendToken,
 }: {
-	error: string | undefined;
+	error: ErrorType | null;
 	loading: boolean;
 	sendToken: (token: string) => void;
 }) {
@@ -395,12 +417,11 @@ function EnterTotp({
 					<Form {...form}>
 						<form onSubmit={form.handleSubmit(onSubmit)}>
 							<div className="space-y-4">
-								{/* TODO: This is essentially a hack to show error message */}
-								{error && !error.includes("required") && (
+								{error && error.code === "TOTPIncorrect" && (
 									<Alert className="mt-6" variant="destructive">
 										<AlertCircle className="w-4 h-4" />
 										<AlertTitle>Error</AlertTitle>
-										<AlertDescription>{error}</AlertDescription>
+										<AlertDescription>{error.detail as string}</AlertDescription>
 									</Alert>
 								)}
 								<FormField
@@ -413,7 +434,7 @@ function EnterTotp({
 												<Input
 													disabled={loading}
 													type="text"
-													className="tracking-widest"
+													className="tracking-[0.5em] max-w-64"
 													{...field}
 												/>
 											</FormControl>

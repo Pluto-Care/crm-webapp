@@ -98,7 +98,7 @@ function useSignIn() {
 					}
 				})
 				.catch((err) => {
-					if (err.response.status === 401) {
+					if (err.response.status === 401 && err.response.data.code === "TOTPRequired") {
 						setMFARequired(true);
 					}
 					setLoading(false);
