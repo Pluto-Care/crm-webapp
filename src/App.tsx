@@ -11,7 +11,7 @@ import {
 import "@/assets/styles/global.css";
 import "@/assets/styles/icons.css";
 /* Components */
-import LoginPage from "@/pages/Login";
+import LoginPage from "@/pages/login/_index";
 import {useAuth, useRefresh} from "@/contexts/auth";
 import Dashboard from "@/pages/dashboard/_index";
 import {useEffect} from "react";
