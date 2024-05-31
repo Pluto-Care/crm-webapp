@@ -22,6 +22,6 @@ export function mfaJoinAPI(token: string) {
 			}
 		)
 		.then((res) => {
-			return res.data as {key: string; backup_codes: string[]; provision: string};
+			return res.data.data as {key: string; backup_codes: string[]; provision: string};
 		});
 }

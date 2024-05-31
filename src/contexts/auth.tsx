@@ -84,21 +84,21 @@ function useSignIn() {
 				)
 				.then((response) => {
 					if (response.status === 202) {
-						setMFAJoinToken(response.data.mfa_join_token);
+						setMFAJoinToken(response.data.data.mfa_join_token);
 						setLoading(false);
 					} else {
 						// Set Context
 						const value = {
-							detail: response.data.user,
-							last_web_session: response.data.last_session,
-							last_token_session: response.data.last_token_session,
+							detail: response.data.data.user,
+							last_web_session: response.data.data.last_session,
+							last_token_session: response.data.data.last_token_session,
 						};
 						setUser(value);
 						setLoading(false);
 					}
 				})
 				.catch((err) => {
-					if (err.response.status === 401 && err.response.data.code === "TOTPRequired") {
+					if (err.response.status === 401 && err.response.data.errors.code === "TOTPRequired") {
 						setMFARequired(true);
 					}
 					setLoading(false);
@@ -169,7 +169,7 @@ function useRefresh() {
 			})
 			.then((response) => {
 				const value = {
-					detail: response.data,
+					detail: response.data.data,
 					last_web_session: user?.last_web_session || null,
 					last_token_session: user?.last_token_session || null,
 				};
