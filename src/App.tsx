@@ -11,13 +11,14 @@ import {
 import "@/assets/styles/global.css";
 import "@/assets/styles/icons.css";
 /* Components */
-import LoginPage from "@/pages/login/_index";
 import {useAuth, useRefresh} from "@/contexts/auth";
-import Dashboard from "@/pages/dashboard/_index";
-import {useEffect} from "react";
+import React, {Suspense, useEffect} from "react";
 import {AlertCircle, Loader2} from "lucide-react";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 import {AxiosRequestErrorDetail, ErrorType} from "@/lib/handleAxiosError";
+
+const Dashboard = React.lazy(() => import("@/pages/dashboard/_index"));
+const LoginPage = React.lazy(() => import("@/pages/login/_index"));
 
 export default function App() {
 	const {refresh, loading, error, isSuccess} = useRefresh();
@@ -38,10 +39,36 @@ export default function App() {
 		<Router>
 			{/* In any other case, give access to routes */}
 			<Routes>
-				<Route path={"/"} element={<LoginPage />} />
+				<Route
+					path={"/"}
+					element={
+						<Suspense
+							fallback={
+								<div className="fixed inset-0 flex justify-center size-full place-items-center">
+									<Loader2 className="w-10 h-10 animate-spin" color={"#888888"} />
+								</div>
+							}
+						>
+							<LoginPage />
+						</Suspense>
+					}
+				/>
 				{/* Protected Routes Start */}
 				<Route element={<ProtectedRoute />}>
-					<Route path={"/dashboard"} element={<Dashboard />} />
+					<Route
+						path={"/dashboard"}
+						element={
+							<Suspense
+								fallback={
+									<div className="fixed inset-0 flex justify-center size-full place-items-center">
+										<Loader2 className="w-10 h-10 animate-spin" color={"#888888"} />
+									</div>
+								}
+							>
+								<Dashboard />
+							</Suspense>
+						}
+					/>
 				</Route>
 				{/* Protected Routes End */}
 			</Routes>
