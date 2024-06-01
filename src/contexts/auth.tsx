@@ -83,7 +83,7 @@ function useSignIn() {
 					}
 				)
 				.then((response) => {
-					if (response.status === 202) {
+					if (response.data.status === 202) {
 						setMFAJoinToken(response.data.data.mfa_join_token);
 						setLoading(false);
 					} else {
@@ -98,7 +98,10 @@ function useSignIn() {
 					}
 				})
 				.catch((err) => {
-					if (err.response.status === 401 && err.response.data.errors.code === "TOTPRequired") {
+					if (
+						err.response.data.status === 401 &&
+						err.response.data.errors.code === "TOTPRequired"
+					) {
 						setMFARequired(true);
 					}
 					setLoading(false);
