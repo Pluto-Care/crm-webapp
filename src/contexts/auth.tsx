@@ -4,7 +4,12 @@
 // react
 import {API_URL as AUTH_BACKEND_URL} from "@/config";
 import {ErrorType, handleAxiosError} from "@/lib/handleAxiosError";
-import {AuthUserLastTokenSessionType, AuthUserLastWebSessionType, AuthUserType} from "@/types/auth";
+import {
+	AuthUserLastTokenSessionType,
+	AuthUserLastWebSessionType,
+	AuthUserRoleType,
+	AuthUserType,
+} from "@/types/auth";
 import axios from "axios";
 import {
 	createContext,
@@ -21,6 +26,8 @@ type AuthValueType = {
 	detail: AuthUserType;
 	last_web_session: AuthUserLastWebSessionType | null;
 	last_token_session: AuthUserLastTokenSessionType | null;
+	role: AuthUserRoleType | null;
+	permissions: string[] | null;
 };
 
 type AuthContextType = {
@@ -92,6 +99,8 @@ function useSignIn() {
 							detail: response.data.data.user,
 							last_web_session: response.data.data.last_session,
 							last_token_session: response.data.data.last_token_session,
+							role: response.data.data.role,
+							permissions: response.data.data.permissions,
 						};
 						setUser(value);
 						setLoading(false);
@@ -172,9 +181,11 @@ function useRefresh() {
 			})
 			.then((response) => {
 				const value = {
-					detail: response.data.data,
+					detail: response.data.data.user,
 					last_web_session: user?.last_web_session || null,
 					last_token_session: user?.last_token_session || null,
+					role: response.data.data.role,
+					permissions: response.data.data.permissions,
 				};
 				setUser(value);
 				setLoading(false);

@@ -11,6 +11,17 @@ export type AuthUserType = {
 	updated_by: string | null;
 };
 
+export type AuthUserRoleType = {
+	id: string;
+	name: string;
+	permissions: string[];
+};
+
+export type AuthUserPermissionsType = {
+	id: string;
+	name: string;
+}[];
+
 export type AuthUserLastTokenSessionType = {
 	id: string;
 	is_valid: boolean;
