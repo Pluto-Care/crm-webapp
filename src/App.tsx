@@ -16,6 +16,7 @@ import React, {Suspense, useEffect} from "react";
 import {AlertCircle, Loader2} from "lucide-react";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 import {AxiosRequestErrorDetail, ErrorType} from "@/lib/handleAxiosError";
+import AdminPatientsDashboard from "./pages/dashboard/admin/patients/_index";
 
 const Dashboard = React.lazy(() => import("@/pages/dashboard/_index"));
 const LoginPage = React.lazy(() => import("@/pages/login/_index"));
@@ -42,39 +43,52 @@ export default function App() {
 				<Route
 					path={"/"}
 					element={
-						<Suspense
-							fallback={
-								<div className="fixed inset-0 flex justify-center size-full place-items-center">
-									<Loader2 className="w-10 h-10 animate-spin" color={"#888888"} />
-								</div>
-							}
-						>
+						<SW>
 							<LoginPage />
-						</Suspense>
+						</SW>
 					}
 				/>
-				{/* Protected Routes Start */}
 				<Route element={<ProtectedRoute />}>
+					{/* Protected Routes Start */}
 					<Route
 						path={"/dashboard"}
 						element={
-							<Suspense
-								fallback={
-									<div className="fixed inset-0 flex justify-center size-full place-items-center">
-										<Loader2 className="w-10 h-10 animate-spin" color={"#888888"} />
-									</div>
-								}
-							>
+							<SW>
 								<Dashboard />
-							</Suspense>
+							</SW>
 						}
 					/>
+					<Route
+						path={"/dashboard/admin/patients"}
+						element={
+							<SW>
+								<AdminPatientsDashboard />
+							</SW>
+						}
+					/>
+					{/* Protected Routes End */}
 				</Route>
-				{/* Protected Routes End */}
 			</Routes>
 		</Router>
 	);
 }
+
+/**
+ * Suspense Wrapper
+ */
+const SW = ({children}: {children: React.ReactNode}) => {
+	return (
+		<Suspense
+			fallback={
+				<div className="flex items-center justify-center min-h-screen">
+					<Loader2 className="w-10 h-10 animate-spin" color={"#888888"} />
+				</div>
+			}
+		>
+			{children}
+		</Suspense>
+	);
+};
 
 const ProtectedRoute = ({redirectPath = "/"}) => {
 	const context = useAuth();

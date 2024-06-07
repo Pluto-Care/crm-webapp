@@ -36,7 +36,7 @@ export default function SidebarItemMenu({
 							to={item.path}
 							className={
 								(location === item.path ? "bg-zinc-800" : "bg-transparent") +
-								" flex items-center gap-3 px-3 py-2 transition-all rounded-lg text-zinc-100 hover:text-primary"
+								" flex items-center gap-3 px-3 py-2 transition-colors rounded-lg text-zinc-100 hover:outline hover:outline-1 hover:outline-zinc-400"
 							}
 						>
 							<item.Icon className="w-4 h-4" />
@@ -53,7 +53,7 @@ export default function SidebarItemMenu({
 							to={item.path}
 							className={
 								(location === item.path ? "bg-zinc-200 dark:bg-zinc-800" : "bg-transparent") +
-								" mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
+								" mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:bg-zinc-100"
 							}
 						>
 							<item.Icon className="w-5 h-5" />

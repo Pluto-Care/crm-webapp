@@ -61,6 +61,18 @@ const SignedOut = (props: {children: ReactNode}): ReactElement => {
 	return user ? <></> : <>{props.children}</>;
 };
 
+const HasPermission = (props: {children: ReactNode; id: string}): ReactElement => {
+	const {user} = useAuth();
+	let hasPermission =
+		user?.permissions?.includes(props.id) || user?.role?.permissions?.includes(props.id);
+	if (!hasPermission) {
+		hasPermission =
+			user?.permissions?.includes("full_access") ||
+			user?.role?.permissions?.includes("full_access");
+	}
+	return hasPermission ? <>{props.children}</> : <></>;
+};
+
 function useSignIn() {
 	const {user, setUser} = useAuth();
 	const [loading, setLoading] = useState<boolean>(false);
@@ -204,4 +216,13 @@ function useRefresh() {
 	return {refresh, user, loading, error, isSuccess};
 }
 
-export {AuthProvider, useAuth, useSignIn, useSignOut, useRefresh, SignedIn, SignedOut};
+export {
+	AuthProvider,
+	useAuth,
+	useSignIn,
+	useSignOut,
+	useRefresh,
+	SignedIn,
+	SignedOut,
+	HasPermission,
+};
