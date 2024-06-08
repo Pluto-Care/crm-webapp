@@ -17,6 +17,8 @@ import {AlertCircle, Loader2} from "lucide-react";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 import {AxiosRequestErrorDetail, ErrorType} from "@/lib/handleAxiosError";
 import ErrorPageFallback from "./components/utils/ErrorPageFallback";
+import PatientDetailPage from "./pages/dashboard/admin/patients/patient/_index";
+import {LoadingScreen} from "./components/utils/LoadingScreen";
 
 const Dashboard = React.lazy(() => import("@/pages/dashboard/_index"));
 const LoginPage = React.lazy(() => import("@/pages/login/_index"));
@@ -77,6 +79,24 @@ export default function App() {
 							</SW>
 						}
 					/>
+					<Route
+						path={"/dashboard/admin/patients/:patient_id"}
+						element={
+							<SW>
+								<HasPermission
+									id="read:patients"
+									fallback={
+										<ErrorPageFallback
+											title="Permission Denied"
+											message="You do not have permission to view this page."
+										/>
+									}
+								>
+									<PatientDetailPage />
+								</HasPermission>
+							</SW>
+						}
+					/>
 					{/* Protected Routes End */}
 				</Route>
 			</Routes>
@@ -88,17 +108,7 @@ export default function App() {
  * Suspense Wrapper
  */
 const SW = ({children}: {children: React.ReactNode}) => {
-	return (
-		<Suspense
-			fallback={
-				<div className="flex items-center justify-center min-h-screen">
-					<Loader2 className="w-10 h-10 animate-spin" color={"#888888"} />
-				</div>
-			}
-		>
-			{children}
-		</Suspense>
-	);
+	return <Suspense fallback={<LoadingScreen />}>{children}</Suspense>;
 };
 
 const ProtectedRoute = ({redirectPath = "/"}) => {

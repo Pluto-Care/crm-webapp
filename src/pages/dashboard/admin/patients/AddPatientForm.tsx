@@ -14,89 +14,19 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {useForm} from "react-hook-form";
-import {monthPretty} from "../../../../lib/dateTimeUtils";
+import {monthPretty} from "@/lib/dateTimeUtils";
 import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
-
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-
-const STATES = {
-	None: [],
-	Canada: [
-		"Alberta",
-		"British Columbia",
-		"Manitoba",
-		"New Brunswick",
-		"Newfoundland and Labrador",
-		"Nova Scotia",
-		"Ontario",
-		"Prince Edward Island",
-		"Quebec",
-		"Saskatchewan",
-		"Northwest Territories",
-		"Nunavut",
-		"Yukon",
-	],
-	"United States": [
-		"Alabama",
-		"Alaska",
-		"Arizona",
-		"Arkansas",
-		"California",
-		"Colorado",
-		"Connecticut",
-		"Delaware",
-		"Florida",
-		"Georgia",
-		"Hawaii",
-		"Idaho",
-		"Illinois",
-		"Indiana",
-		"Iowa",
-		"Kansas",
-		"Kentucky",
-		"Louisiana",
-		"Maine",
-		"Maryland",
-		"Massachusetts",
-		"Michigan",
-		"Minnesota",
-		"Mississippi",
-		"Missouri",
-		"Montana",
-		"Nebraska",
-		"Nevada",
-		"New Hampshire",
-		"New Jersey",
-		"New Mexico",
-		"New York",
-		"North Carolina",
-		"North Dakota",
-		"Ohio",
-		"Oklahoma",
-		"Oregon",
-		"Pennsylvania",
-		"Rhode Island",
-		"South Carolina",
-		"South Dakota",
-		"Tennessee",
-		"Texas",
-		"Utah",
-		"Vermont",
-		"Virginia",
-		"Washington",
-		"West Virginia",
-		"Wisconsin",
-		"Wyoming",
-	],
-};
-
-const COUNTRY_LIST = ["Canada", "United States"];
+import {useMutation} from "@tanstack/react-query";
+import {createPatientAPI} from "@/services/api/patients/create";
+import {useNavigate} from "react-router-dom";
+import {Loader2} from "lucide-react";
+import {format} from "date-fns";
 
 const addPatientSchema = z.object({
 	email: z.string().email(),
@@ -114,6 +44,7 @@ const addPatientSchema = z.object({
 });
 
 export default function AddPatientForm(props: {children: React.ReactNode}) {
+	const navigate = useNavigate();
 	const form = useForm<z.infer<typeof addPatientSchema>>({
 		resolver: zodResolver(addPatientSchema),
 		defaultValues: {
@@ -123,14 +54,23 @@ export default function AddPatientForm(props: {children: React.ReactNode}) {
 	});
 	const watch_country: string = form.watch("country", "Canada");
 
+	//mutation
+	const mutation = useMutation({
+		mutationKey: ["addPatient"],
+		mutationFn: (data: any) => createPatientAPI(data),
+		onSuccess: (data) => {
+			navigate("/dashboard/admin/patients/" + data.data.id);
+		},
+	});
+
 	const onSubmit = (data: z.infer<typeof addPatientSchema>) => {
 		// convert dob to ISO string
-		const dob = new Date(data.dob_year, data.dob_month - 1, data.dob_day).toISOString();
+		const dob = format(new Date(data.dob_year, data.dob_month - 1, data.dob_day), "yyyy-MM-dd");
 		const patient = {
 			...data,
 			dob,
 		};
-		console.log(patient);
+		mutation.mutate(patient);
 	};
 
 	return (
@@ -143,6 +83,11 @@ export default function AddPatientForm(props: {children: React.ReactNode}) {
 						<DialogDescription>Fill in the details below to add a new patient.</DialogDescription>
 					</DialogHeader>
 					<div className="max-w-5xl py-8 mx-auto mt-8">
+						{mutation.isError && (
+							<div className="p-4 mb-4 text-red-600 bg-red-100 border border-red-300 rounded">
+								{mutation.error.message}
+							</div>
+						)}
 						<Form {...form}>
 							<form onSubmit={form.handleSubmit(onSubmit)}>
 								<DialogDescription className="px-4 py-2 mb-6 text-base font-medium bg-muted text-foreground">
@@ -501,7 +446,10 @@ export default function AddPatientForm(props: {children: React.ReactNode}) {
 									/>
 								</div>
 								<DialogFooter>
-									<Button type="submit">Add Patient</Button>
+									<Button type="submit" disabled={mutation.isPending}>
+										{mutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+										Add Patient
+									</Button>
 								</DialogFooter>
 							</form>
 						</Form>
@@ -511,3 +459,76 @@ export default function AddPatientForm(props: {children: React.ReactNode}) {
 		</Dialog>
 	);
 }
+
+const STATES = {
+	None: [],
+	Canada: [
+		"Alberta",
+		"British Columbia",
+		"Manitoba",
+		"New Brunswick",
+		"Newfoundland and Labrador",
+		"Nova Scotia",
+		"Ontario",
+		"Prince Edward Island",
+		"Quebec",
+		"Saskatchewan",
+		"Northwest Territories",
+		"Nunavut",
+		"Yukon",
+	],
+	"United States": [
+		"Alabama",
+		"Alaska",
+		"Arizona",
+		"Arkansas",
+		"California",
+		"Colorado",
+		"Connecticut",
+		"Delaware",
+		"Florida",
+		"Georgia",
+		"Hawaii",
+		"Idaho",
+		"Illinois",
+		"Indiana",
+		"Iowa",
+		"Kansas",
+		"Kentucky",
+		"Louisiana",
+		"Maine",
+		"Maryland",
+		"Massachusetts",
+		"Michigan",
+		"Minnesota",
+		"Mississippi",
+		"Missouri",
+		"Montana",
+		"Nebraska",
+		"Nevada",
+		"New Hampshire",
+		"New Jersey",
+		"New Mexico",
+		"New York",
+		"North Carolina",
+		"North Dakota",
+		"Ohio",
+		"Oklahoma",
+		"Oregon",
+		"Pennsylvania",
+		"Rhode Island",
+		"South Carolina",
+		"South Dakota",
+		"Tennessee",
+		"Texas",
+		"Utah",
+		"Vermont",
+		"Virginia",
+		"Washington",
+		"West Virginia",
+		"Wisconsin",
+		"Wyoming",
+	],
+};
+
+const COUNTRY_LIST = ["Canada", "United States"];

@@ -4,18 +4,19 @@ import {PatientType} from "@/types/patient";
 
 /**
  *
+ * @param patient - PatientType
  * @returns Promise
  *
  */
-export function getOrgPatientListAPI() {
+export function createPatientAPI(patient: PatientType) {
 	return axios
-		.get(API_URL + "/api/patient/list/", {
+		.post(API_URL + "/api/patient/new/", patient, {
 			headers: {
 				"Content-Type": "application/json",
 			},
 			withCredentials: true,
 		})
-		.then((response) => {
-			return response.data.data as PatientType[];
+		.then((res) => {
+			return res.data;
 		});
 }

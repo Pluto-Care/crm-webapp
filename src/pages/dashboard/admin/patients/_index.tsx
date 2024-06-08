@@ -1,4 +1,4 @@
-import {Patient} from "@/types/patient";
+import {PatientType} from "@/types/patient";
 import DashboardLayout from "../../_layout";
 import {
 	ColumnDef,
@@ -28,8 +28,11 @@ import {useState} from "react";
 import {Skeleton} from "@/components/ui/skeleton";
 import AddPatientForm from "./AddPatientForm";
 import {HasPermission} from "@/contexts/auth";
+import {Link} from "react-router-dom";
+import {Helmet} from "react-helmet";
+import {APP_NAME} from "@/config";
 
-export const columns: ColumnDef<Patient>[] = [
+export const columns: ColumnDef<PatientType>[] = [
 	{
 		accessorKey: "first_name",
 		header: "First Name",
@@ -96,6 +99,9 @@ export default function AdminPatientsDashboard() {
 
 	return (
 		<DashboardLayout>
+			<Helmet>
+				<title>Patients &mdash; {APP_NAME}</title>
+			</Helmet>
 			<div className="flex mb-5">
 				<div className="flex-1">
 					<h1 className="text-xl font-semibold md:text-2xl">Patient List</h1>
@@ -179,11 +185,21 @@ function DataTable<TData, TValue>({columns, data}: DataTableProps<TData, TValue>
 					</TableHeader>
 					<TableBody>
 						{table.getRowModel().rows?.length ? (
-							table.getRowModel().rows.map((row) => (
+							table.getRowModel().rows.map((row, row_index) => (
 								<TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-									{row.getVisibleCells().map((cell) => (
+									{row.getVisibleCells().map((cell, index) => (
 										<TableCell key={cell.id}>
-											{flexRender(cell.column.columnDef.cell, cell.getContext())}
+											{index === 0 ? (
+												<Link
+													to={`/dashboard/admin/patients/${
+														(data as PatientType[])[row_index]["id"]
+													}`}
+												>
+													{flexRender(cell.column.columnDef.cell, cell.getContext())}
+												</Link>
+											) : (
+												flexRender(cell.column.columnDef.cell, cell.getContext())
+											)}
 										</TableCell>
 									))}
 								</TableRow>

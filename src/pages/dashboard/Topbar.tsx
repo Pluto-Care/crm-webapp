@@ -10,24 +10,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {useAuth, useSignOut} from "@/contexts/auth";
 import {useTheme} from "@/components/theme-provider";
-import {useQuery} from "@tanstack/react-query";
-import {getMyOrgAPI} from "@/services/api/organization/me";
 import {Skeleton} from "@/components/ui/skeleton";
 import {SidebarMobile} from "./Sidebar";
+import {OrgType} from "@/types/org";
 
-export default function Topbar() {
+export default function Topbar({organization}: {organization: OrgType | undefined}) {
 	const {theme, setTheme} = useTheme();
 	const auth_context = useAuth();
 	const {loading, signOut} = useSignOut();
-	const org_query = useQuery({
-		queryKey: ["my_org"],
-		queryFn: () => getMyOrgAPI(),
-		refetchOnWindowFocus: false,
-		retry: 1,
-	});
 
 	return (
-		<header className="flex h-14 items-center gap-4 border-b px-4 lg:h-[60px] lg:px-6">
+		<header className="sticky top-0 z-10 bg-white dark:bg-zinc-950 flex h-14 items-center gap-4 border-b px-4 lg:h-[60px] lg:px-6">
 			<SidebarMobile />
 			<div className="flex-1 w-full">
 				<h4>Welcome, {auth_context.user?.detail.first_name}</h4>
@@ -49,20 +42,18 @@ export default function Topbar() {
 					</Button>
 				</div>
 				<div className="flex items-center">
-					{org_query.isSuccess ? (
-						<div className="flex items-center gap-2 px-2.5 py-1 text-sm border rounded-lg">
+					{organization ? (
+						<div className="flex items-center gap-2 px-2.5 py-1 min-w-40 text-sm border rounded-lg">
 							<Hospital strokeWidth={1.75} absoluteStrokeWidth className="size-5" />
 							<div>
-								<div className="font-medium leading-4">{org_query.data.name}</div>
+								<div className="font-medium leading-4">{organization.name}</div>
 								<div className="leading-4 text-muted-foreground">
-									{org_query.data.city}, {org_query.data.state}
+									{organization.city}, {organization.state}
 								</div>
 							</div>
 						</div>
-					) : org_query.isLoading ? (
-						<Skeleton className="h-9 w-[250px]" />
 					) : (
-						<></>
+						<Skeleton className="h-9 w-[250px]" />
 					)}
 				</div>
 				<DropdownMenu>

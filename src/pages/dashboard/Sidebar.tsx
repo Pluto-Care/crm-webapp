@@ -20,7 +20,7 @@ const adminMenu: SidebarMenuItem[] = [
 	{
 		title: "Admin Dash",
 		Icon: HomeIcon,
-		path: "/dashboard/admin",
+		path: "/dashboard/admin/home",
 	},
 	{
 		title: "Doctors",
@@ -39,17 +39,17 @@ const forYouMenu: SidebarMenuItem[] = [
 	{
 		title: "Quick Summary",
 		Icon: ZapIcon,
-		path: "/dashboard",
+		path: "/dashboard/my/summary",
 	},
 	{
 		title: "My Patients",
 		Icon: ContactIcon,
-		path: "/dashboard/patients",
+		path: "/dashboard/my/patients",
 	},
 	{
 		title: "Appointment Calendar",
 		Icon: Users,
-		path: "/dashboard/appointments",
+		path: "/dashboard/my/appointments",
 	},
 ];
 
@@ -76,8 +76,8 @@ const bottomNavMenu: SidebarMenuItem[] = [
 
 export default function Sidebar() {
 	return (
-		<div className="hidden border-r bg-zinc-900 md:block">
-			<div className="flex flex-col h-full max-h-screen gap-2">
+		<div className="relative hidden border-r bg-zinc-900 md:block">
+			<div className="sticky top-0 flex flex-col h-full max-h-screen gap-2 overflow-y-auto">
 				<div className="flex h-14 items-center border-b border-zinc-800 px-4 lg:h-[60px] lg:px-6">
 					<Link to="/" className="flex items-center gap-2 font-semibold">
 						<img src={Logo} alt="Logo" className="h-5 invert brightness-75" />
