@@ -31,6 +31,7 @@ const adminMenu: SidebarMenuItem[] = [
 		title: "Patients",
 		Icon: UsersIcon,
 		path: "/dashboard/admin/patients",
+		need_permission: "read:patients",
 	},
 ];
 

@@ -3,10 +3,10 @@ import DashboardLayout from "../../_layout";
 import {
 	ColumnDef,
 	flexRender,
-	ColumnFiltersState,
 	getFilteredRowModel,
 	getCoreRowModel,
 	useReactTable,
+	GlobalFilterTableState,
 } from "@tanstack/react-table";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Input} from "@/components/ui/input";
@@ -21,17 +21,13 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 
 import {useQuery} from "@tanstack/react-query";
 import {getOrgPatientListAPI} from "@/services/api/patients/list";
 import {useState} from "react";
+import {Skeleton} from "@/components/ui/skeleton";
+import AddPatientForm from "./AddPatientForm";
+import {HasPermission} from "@/contexts/auth";
 
 export const columns: ColumnDef<Patient>[] = [
 	{
@@ -49,6 +45,10 @@ export const columns: ColumnDef<Patient>[] = [
 	{
 		accessorKey: "phone",
 		header: "Phone",
+	},
+	{
+		accessorKey: "city",
+		header: "City",
 	},
 	{
 		id: "actions",
@@ -96,18 +96,25 @@ export default function AdminPatientsDashboard() {
 
 	return (
 		<DashboardLayout>
-			<Breadcrumb>
-				<BreadcrumbList>
-					<BreadcrumbItem>
-						<BreadcrumbPage>Admin Menu</BreadcrumbPage>
-					</BreadcrumbItem>
-					<BreadcrumbSeparator />
-					<BreadcrumbItem>
-						<BreadcrumbPage>Patients</BreadcrumbPage>
-					</BreadcrumbItem>
-				</BreadcrumbList>
-			</Breadcrumb>
-			<h1 className="my-4 text-lg font-semibold md:text-2xl">Patient List</h1>
+			<div className="flex mb-5">
+				<div className="flex-1">
+					<h1 className="text-xl font-semibold md:text-2xl">Patient List</h1>
+					{patient_list_query.isLoading ? (
+						<Skeleton className="w-48 h-6" />
+					) : (
+						<p className="!mt-1 text-sm text-muted-foreground">
+							Total count: {patient_list_query.data?.length}
+						</p>
+					)}
+				</div>
+				<div>
+					<HasPermission id="create:patients" fallback={<></>}>
+						<AddPatientForm>
+							<Button variant={"default"}>Add New Patient</Button>
+						</AddPatientForm>
+					</HasPermission>
+				</div>
+			</div>
 			<DataTable
 				columns={columns}
 				data={patient_list_query.isSuccess ? patient_list_query.data : []}
@@ -117,34 +124,43 @@ export default function AdminPatientsDashboard() {
 }
 
 function DataTable<TData, TValue>({columns, data}: DataTableProps<TData, TValue>) {
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+	const [globalFilter, setGlobalFilter] = useState<GlobalFilterTableState | null>(null);
 	const table = useReactTable({
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
-		onColumnFiltersChange: setColumnFilters,
 		getFilteredRowModel: getFilteredRowModel(),
 		state: {
-			columnFilters,
+			globalFilter,
+		},
+		enableGlobalFilter: true,
+		onGlobalFilterChange: (newGlobalFilter) => {
+			setGlobalFilter({globalFilter: newGlobalFilter});
+		},
+		globalFilterFn: (row) => {
+			const values = row
+				.getAllCells()
+				.map((cell) => cell.getValue())
+				.join(" ");
+			return values.toLowerCase().includes(globalFilter?.globalFilter.toLowerCase());
 		},
 	});
 
 	return (
 		<>
-			<div className="flex gap-4 my-4">
-				<div className="py-2.5 text-sm font-medium">Filter</div>
-				<div className="">
+			<div className="grid gap-4 mt-4">
+				<div>
 					<Input
-						value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-						onChange={(event) => table.getColumn("email")?.setFilterValue(event.target.value)}
-						className="max-w-sm"
+						placeholder="Filter patients..."
+						value={globalFilter?.globalFilter ?? ""}
+						onChange={(event) => {
+							table.setGlobalFilter(event.target.value);
+						}}
+						className="w-full max-w-xs"
 					/>
-					<p className="!mt-1 text-xs text-muted-foreground">
-						Filter by name, email, or phone number.
-					</p>
 				</div>
 			</div>
-			<div className="my-2 border rounded-md">
+			<div className="my-4 border rounded-lg">
 				<Table>
 					<TableHeader>
 						{table.getHeaderGroups().map((headerGroup) => (

@@ -124,3 +124,21 @@ export function weekDay(dt: string) {
 	const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 	return days[x.getDay()];
 }
+
+export function monthPretty(month: number) {
+	const monthNames = [
+		"January",
+		"February",
+		"March",
+		"April",
+		"May",
+		"June",
+		"July",
+		"August",
+		"September",
+		"October",
+		"November",
+		"December",
+	];
+	return monthNames[month];
+}

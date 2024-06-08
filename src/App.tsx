@@ -11,15 +11,16 @@ import {
 import "@/assets/styles/global.css";
 import "@/assets/styles/icons.css";
 /* Components */
-import {useAuth, useRefresh} from "@/contexts/auth";
+import {HasPermission, useAuth, useRefresh} from "@/contexts/auth";
 import React, {Suspense, useEffect} from "react";
 import {AlertCircle, Loader2} from "lucide-react";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 import {AxiosRequestErrorDetail, ErrorType} from "@/lib/handleAxiosError";
-import AdminPatientsDashboard from "./pages/dashboard/admin/patients/_index";
+import ErrorPageFallback from "./components/utils/ErrorPageFallback";
 
 const Dashboard = React.lazy(() => import("@/pages/dashboard/_index"));
 const LoginPage = React.lazy(() => import("@/pages/login/_index"));
+const AdminPatientsDashboard = React.lazy(() => import("@/pages/dashboard/admin/patients/_index"));
 
 export default function App() {
 	const {refresh, loading, error, isSuccess} = useRefresh();
@@ -62,7 +63,17 @@ export default function App() {
 						path={"/dashboard/admin/patients"}
 						element={
 							<SW>
-								<AdminPatientsDashboard />
+								<HasPermission
+									id="read:patients"
+									fallback={
+										<ErrorPageFallback
+											title="Permission Denied"
+											message="You do not have permission to view this page."
+										/>
+									}
+								>
+									<AdminPatientsDashboard />
+								</HasPermission>
 							</SW>
 						}
 					/>

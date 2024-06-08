@@ -27,7 +27,7 @@ type AuthValueType = {
 	last_web_session: AuthUserLastWebSessionType | null;
 	last_token_session: AuthUserLastTokenSessionType | null;
 	role: AuthUserRoleType | null;
-	permissions: string[] | null;
+	permissions: {id: string; name: string}[] | null;
 };
 
 type AuthContextType = {
@@ -61,16 +61,31 @@ const SignedOut = (props: {children: ReactNode}): ReactElement => {
 	return user ? <></> : <>{props.children}</>;
 };
 
-const HasPermission = (props: {children: ReactNode; id: string}): ReactElement => {
+/**
+ *
+ * @param id Example: "read:patients"
+ * @returns boolean
+ */
+const usePermission = (id: string): boolean => {
 	const {user} = useAuth();
-	let hasPermission =
-		user?.permissions?.includes(props.id) || user?.role?.permissions?.includes(props.id);
+	// users.permissions format [{ id: "read:patients", name: "View Patients" }, ..]
+	const user_permissions_ids = user?.permissions?.map((permission) => permission.id);
+	let hasPermission = user_permissions_ids?.includes(id) || user?.role?.permissions?.includes(id);
 	if (!hasPermission) {
 		hasPermission =
-			user?.permissions?.includes("full_access") ||
+			user_permissions_ids?.includes("full_access") ||
 			user?.role?.permissions?.includes("full_access");
 	}
-	return hasPermission ? <>{props.children}</> : <></>;
+	return hasPermission ?? false;
+};
+
+const HasPermission = (props: {
+	children: ReactNode;
+	id: string;
+	fallback: ReactNode;
+}): ReactElement => {
+	const permission = usePermission(props.id);
+	return permission ? <>{props.children}</> : <>{props.fallback}</>;
 };
 
 function useSignIn() {
