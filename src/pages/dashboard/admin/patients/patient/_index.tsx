@@ -8,11 +8,13 @@ import {
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {ErrorMessageAlert} from "@/components/utils/ErrorMessageAlert";
 import {LoadingScreen} from "@/components/utils/LoadingScreen";
+import {APP_NAME} from "@/config";
 import DashboardLayout from "@/pages/dashboard/_layout";
 import {getPatientAPI} from "@/services/api/patients/single_patient/get";
 import {PatientType} from "@/types/patient";
 import {Label} from "@radix-ui/react-dropdown-menu";
 import {useQuery} from "@tanstack/react-query";
+import {Helmet} from "react-helmet";
 import {Link, Navigate, useParams} from "react-router-dom";
 
 export default function PatientDetailPage() {
@@ -34,6 +36,12 @@ export default function PatientDetailPage() {
 				<LoadingScreen message="Loading patient..." />
 			) : patient_query.isSuccess ? (
 				<>
+					<Helmet>
+						<title>
+							Patient &mdash; {patient_query.data?.first_name} {patient_query.data?.last_name}{" "}
+							&mdash; {APP_NAME}
+						</title>
+					</Helmet>
 					<Breadcrumb>
 						<BreadcrumbList>
 							<BreadcrumbItem>Admin Dashboard</BreadcrumbItem>
