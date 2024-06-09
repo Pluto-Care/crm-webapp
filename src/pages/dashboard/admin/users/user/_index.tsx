@@ -17,6 +17,8 @@ import {useQuery} from "@tanstack/react-query";
 import {Helmet} from "react-helmet";
 import {Link, Navigate, useParams} from "react-router-dom";
 import {PermissionsTab} from "./PermissionsTab";
+import {HasPermission} from "@/contexts/auth";
+import {MODIFY_USER_PERMISSIONS} from "@/permissions/permissions";
 
 export default function UserDetailPage() {
 	const {user_id} = useParams();
@@ -83,12 +85,25 @@ export default function UserDetailPage() {
 										{user_query.isSuccess && <UserDetails user={user_query.data.user} />}
 									</TabsContent>
 									<TabsContent value="permissions" className="!mt-0">
-										{user_query.isSuccess && (
-											<PermissionsTab
-												permissions={user_query.data.permissions}
-												role={user_query.data.role}
-											/>
-										)}
+										<HasPermission
+											id={MODIFY_USER_PERMISSIONS}
+											fallback={
+												<ErrorMessageAlert
+													title="Permission Denied"
+													message="You do not have permission to modify user permissions."
+												/>
+											}
+										>
+											{user_query.isSuccess ? (
+												<PermissionsTab
+													permissions={user_query.data.permissions}
+													role={user_query.data.role}
+													user={user_query.data.user}
+												/>
+											) : (
+												<></>
+											)}
+										</HasPermission>
 									</TabsContent>
 								</div>
 							</div>

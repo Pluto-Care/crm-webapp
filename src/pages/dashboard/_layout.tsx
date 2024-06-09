@@ -2,6 +2,7 @@ import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import {useQuery} from "@tanstack/react-query";
 import {getMyOrgAPI} from "@/services/api/organization/me";
+import {Toaster} from "@/components/ui/sonner";
 
 export default function DashboardLayout(props: {children: React.ReactNode}) {
 	const org_query = useQuery({
@@ -22,6 +23,7 @@ export default function DashboardLayout(props: {children: React.ReactNode}) {
 					{/* Main section end */}
 				</main>
 			</div>
+			<Toaster />
 		</div>
 	);
 }
