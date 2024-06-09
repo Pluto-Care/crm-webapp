@@ -1,6 +1,6 @@
 import axios from "axios";
 import {API_URL} from "@/config";
-import {UserType} from "@/types/user";
+import {UserPermissions, UserRole, UserType} from "@/types/user";
 import {APIErrorResponse} from "@/types/api";
 
 /**
@@ -18,7 +18,7 @@ export function getSingleUserAPI(user_id: string) {
 			withCredentials: true,
 		})
 		.then((response) => {
-			return response.data.data as UserType;
+			return response.data.data as {user: UserType; permissions?: UserPermissions; role?: UserRole};
 		})
 		.catch((error) => {
 			throw error.data as APIErrorResponse;

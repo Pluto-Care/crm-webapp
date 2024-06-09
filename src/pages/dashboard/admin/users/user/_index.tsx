@@ -10,12 +10,13 @@ import {ErrorMessageAlert} from "@/components/utils/ErrorMessageAlert";
 import {LoadingScreen} from "@/components/utils/LoadingScreen";
 import {APP_NAME} from "@/config";
 import DashboardLayout from "@/pages/dashboard/_layout";
-import {getSingleUserAPI} from "@/services/api/organization/get_single_user";
+import {getSingleUserAPI} from "@/services/api/organization/admin/get_single_user";
 import {UserType} from "@/types/user";
 import {Label} from "@radix-ui/react-dropdown-menu";
 import {useQuery} from "@tanstack/react-query";
 import {Helmet} from "react-helmet";
 import {Link, Navigate, useParams} from "react-router-dom";
+import {PermissionsTab} from "./PermissionsTab";
 
 export default function UserDetailPage() {
 	const {user_id} = useParams();
@@ -39,8 +40,8 @@ export default function UserDetailPage() {
 				<>
 					<Helmet>
 						<title>
-							User &mdash; {user_query.data?.first_name} {user_query.data?.last_name} &mdash;{" "}
-							{APP_NAME}
+							User &mdash; {user_query.data?.user.first_name} {user_query.data?.user.last_name}{" "}
+							&mdash; {APP_NAME}
 						</title>
 					</Helmet>
 					<Breadcrumb>
@@ -52,7 +53,7 @@ export default function UserDetailPage() {
 							</BreadcrumbItem>
 							<BreadcrumbSeparator />
 							<BreadcrumbPage>
-								{user_query.data?.first_name} {user_query.data?.last_name}
+								{user_query.data?.user.first_name} {user_query.data?.user.last_name}
 							</BreadcrumbPage>
 						</BreadcrumbList>
 					</Breadcrumb>
@@ -60,7 +61,7 @@ export default function UserDetailPage() {
 					<div className="flex mt-6 mb-5">
 						<div className="flex-1">
 							<h1 className="text-xl font-semibold md:text-2xl">
-								{user_query.data?.first_name} {user_query.data?.last_name}
+								{user_query.data?.user.first_name} {user_query.data?.user.last_name}
 							</h1>
 							<p className="!mt-1 text-sm text-muted-foreground">User</p>
 						</div>
@@ -77,11 +78,18 @@ export default function UserDetailPage() {
 								</TabsTrigger>
 							</TabsList>
 							<div className="flex-1">
-								<div className="py-2">
+								<div>
 									<TabsContent value="view" className="!mt-0">
-										{user_query.isSuccess && <UserDetails user={user_query.data} />}
+										{user_query.isSuccess && <UserDetails user={user_query.data.user} />}
 									</TabsContent>
-									<TabsContent value="permissions">Change your password here.</TabsContent>
+									<TabsContent value="permissions" className="!mt-0">
+										{user_query.isSuccess && (
+											<PermissionsTab
+												permissions={user_query.data.permissions}
+												role={user_query.data.role}
+											/>
+										)}
+									</TabsContent>
 								</div>
 							</div>
 						</div>

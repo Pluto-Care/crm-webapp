@@ -24,7 +24,7 @@ import {Button} from "@/components/ui/button";
 import {useMutation} from "@tanstack/react-query";
 import {useNavigate} from "react-router-dom";
 import {Loader2} from "lucide-react";
-import {createUserAPI} from "@/services/api/organization/create_user";
+import {createUserAPI} from "@/services/api/organization/admin/create_user";
 
 const addUserSchema = z.object({
 	email: z.string().email(),

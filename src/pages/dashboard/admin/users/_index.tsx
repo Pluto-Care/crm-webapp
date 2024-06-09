@@ -28,7 +28,7 @@ import {HasPermission} from "@/contexts/auth";
 import {Link} from "react-router-dom";
 import {Helmet} from "react-helmet";
 import {APP_NAME} from "@/config";
-import {getOrgUsersAPI} from "@/services/api/organization/get_users";
+import {getOrgUsersAPI} from "@/services/api/organization/admin/get_users";
 import {OrgUser} from "@/types/org";
 import {ErrorMessageAlert} from "@/components/utils/ErrorMessageAlert";
 import {LoadingScreen} from "@/components/utils/LoadingScreen";

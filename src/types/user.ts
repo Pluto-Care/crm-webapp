@@ -9,3 +9,11 @@ export type UserType = {
 	created_by: string | null;
 	updated_by: string | null;
 };
+
+export type UserRole = {
+	id: string;
+	name: string;
+	permissions: string[];
+};
+
+export type UserPermissions = {id: string; name: string}[];
