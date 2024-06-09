@@ -15,6 +15,7 @@ import {Link} from "react-router-dom";
 import Logo from "@/assets/images/full-logo.svg";
 import SidebarItemMenu, {MenuItem as SidebarMenuItem} from "./SidebarItemMenu";
 import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet";
+import {READ_ALL_PATIENTS, READ_ALL_USERS} from "@/permissions/permissions";
 
 const adminMenu: SidebarMenuItem[] = [
 	{
@@ -23,15 +24,16 @@ const adminMenu: SidebarMenuItem[] = [
 		path: "/dashboard/admin/home",
 	},
 	{
-		title: "Doctors",
+		title: "Users",
 		Icon: ContactIcon,
-		path: "/dashboard/admin/doctors",
+		path: "/dashboard/admin/users",
+		need_permission: READ_ALL_USERS,
 	},
 	{
 		title: "Patients",
 		Icon: UsersIcon,
 		path: "/dashboard/admin/patients",
-		need_permission: "read:patients",
+		need_permission: READ_ALL_PATIENTS,
 	},
 ];
 

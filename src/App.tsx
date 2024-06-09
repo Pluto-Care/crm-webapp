@@ -19,10 +19,13 @@ import {AxiosRequestErrorDetail, ErrorType} from "@/lib/handleAxiosError";
 import ErrorPageFallback from "./components/utils/ErrorPageFallback";
 import PatientDetailPage from "./pages/dashboard/admin/patients/patient/_index";
 import {LoadingScreen} from "./components/utils/LoadingScreen";
+import {READ_ALL_PATIENTS, READ_ALL_USERS} from "./permissions/permissions";
 
 const Dashboard = React.lazy(() => import("@/pages/dashboard/_index"));
 const LoginPage = React.lazy(() => import("@/pages/login/_index"));
 const AdminPatientsDashboard = React.lazy(() => import("@/pages/dashboard/admin/patients/_index"));
+const AdminUsersDashboard = React.lazy(() => import("@/pages/dashboard/admin/users/_index"));
+const UserDetailPage = React.lazy(() => import("@/pages/dashboard/admin/users/user/_index"));
 
 export default function App() {
 	const {refresh, loading, error, isSuccess} = useRefresh();
@@ -66,7 +69,7 @@ export default function App() {
 						element={
 							<SW>
 								<HasPermission
-									id="read:patients"
+									id={READ_ALL_PATIENTS}
 									fallback={
 										<ErrorPageFallback
 											title="Permission Denied"
@@ -84,7 +87,7 @@ export default function App() {
 						element={
 							<SW>
 								<HasPermission
-									id="read:patients"
+									id={READ_ALL_PATIENTS}
 									fallback={
 										<ErrorPageFallback
 											title="Permission Denied"
@@ -93,6 +96,43 @@ export default function App() {
 									}
 								>
 									<PatientDetailPage />
+								</HasPermission>
+							</SW>
+						}
+					/>
+
+					<Route
+						path={"/dashboard/admin/users"}
+						element={
+							<SW>
+								<HasPermission
+									id={READ_ALL_USERS}
+									fallback={
+										<ErrorPageFallback
+											title="Permission Denied"
+											message="You do not have permission to view this page."
+										/>
+									}
+								>
+									<AdminUsersDashboard />
+								</HasPermission>
+							</SW>
+						}
+					/>
+					<Route
+						path={"/dashboard/admin/users/:user_id"}
+						element={
+							<SW>
+								<HasPermission
+									id={READ_ALL_USERS}
+									fallback={
+										<ErrorPageFallback
+											title="Permission Denied"
+											message="You do not have permission to view this page."
+										/>
+									}
+								>
+									<UserDetailPage />
 								</HasPermission>
 							</SW>
 						}

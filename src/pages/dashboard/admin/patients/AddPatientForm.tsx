@@ -27,6 +27,7 @@ import {createPatientAPI} from "@/services/api/patients/create";
 import {useNavigate} from "react-router-dom";
 import {Loader2} from "lucide-react";
 import {format} from "date-fns";
+import {PatientType} from "@/types/patient";
 
 const addPatientSchema = z.object({
 	email: z.string().email(),
@@ -57,7 +58,7 @@ export default function AddPatientForm(props: {children: React.ReactNode}) {
 	//mutation
 	const mutation = useMutation({
 		mutationKey: ["addPatient"],
-		mutationFn: (data: any) => createPatientAPI(data),
+		mutationFn: (data: unknown) => createPatientAPI(data as PatientType),
 		onSuccess: (data) => {
 			navigate("/dashboard/admin/patients/" + data.data.id);
 		},

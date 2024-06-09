@@ -1,4 +1,3 @@
-import {PatientType} from "@/types/patient";
 import DashboardLayout from "../../_layout";
 import {
 	ColumnDef,
@@ -23,17 +22,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import {useQuery} from "@tanstack/react-query";
-import {getOrgPatientListAPI} from "@/services/api/patients/list";
 import {useState} from "react";
 import {Skeleton} from "@/components/ui/skeleton";
-import AddPatientForm from "./AddPatientForm";
 import {HasPermission} from "@/contexts/auth";
 import {Link} from "react-router-dom";
 import {Helmet} from "react-helmet";
 import {APP_NAME} from "@/config";
-import {CREATE_PATIENTS} from "@/permissions/permissions";
+import {getOrgUsersAPI} from "@/services/api/organization/get_users";
+import {OrgUser} from "@/types/org";
+import {ErrorMessageAlert} from "@/components/utils/ErrorMessageAlert";
+import {LoadingScreen} from "@/components/utils/LoadingScreen";
+import {CREATE_USERS} from "@/permissions/permissions";
+import AddUserForm from "./AddUserForm";
 
-export const columns: ColumnDef<PatientType>[] = [
+export const columns: ColumnDef<OrgUser>[] = [
 	{
 		accessorKey: "first_name",
 		header: "First Name",
@@ -47,12 +49,8 @@ export const columns: ColumnDef<PatientType>[] = [
 		header: "Email",
 	},
 	{
-		accessorKey: "phone",
-		header: "Phone",
-	},
-	{
-		accessorKey: "city",
-		header: "City",
+		accessorKey: "created_at",
+		header: "Created On",
 	},
 	{
 		id: "actions",
@@ -91,10 +89,10 @@ interface DataTableProps<TData, TValue> {
 	data: TData[];
 }
 
-export default function AdminPatientsDashboard() {
-	const patient_list_query = useQuery({
-		queryKey: ["org_patient_list"],
-		queryFn: () => getOrgPatientListAPI(),
+export default function AdminUsersDashboard() {
+	const users_list_query = useQuery({
+		queryKey: ["org_users_list"],
+		queryFn: () => getOrgUsersAPI(),
 		refetchOnWindowFocus: false,
 	});
 
@@ -105,27 +103,33 @@ export default function AdminPatientsDashboard() {
 			</Helmet>
 			<div className="flex mb-5">
 				<div className="flex-1">
-					<h1 className="text-xl font-semibold md:text-2xl">Patient List</h1>
-					{patient_list_query.isLoading ? (
+					<h1 className="text-xl font-semibold md:text-2xl">Users List</h1>
+					{users_list_query.isLoading ? (
 						<Skeleton className="w-48 h-6" />
 					) : (
 						<p className="!mt-1 text-sm text-muted-foreground">
-							Total count: {patient_list_query.data?.length}
+							Total users: {users_list_query.data?.length}
 						</p>
 					)}
 				</div>
 				<div>
-					<HasPermission id={CREATE_PATIENTS} fallback={<></>}>
-						<AddPatientForm>
-							<Button variant={"default"}>Add New Patient</Button>
-						</AddPatientForm>
+					<HasPermission id={CREATE_USERS} fallback={<></>}>
+						<AddUserForm>
+							<Button variant={"default"}>Add New User</Button>
+						</AddUserForm>
 					</HasPermission>
 				</div>
 			</div>
-			<DataTable
-				columns={columns}
-				data={patient_list_query.isSuccess ? patient_list_query.data : []}
-			/>
+			{users_list_query.isSuccess ? (
+				<DataTable columns={columns} data={users_list_query.data} />
+			) : users_list_query.isError ? (
+				<ErrorMessageAlert
+					title="An error has occured"
+					message="Please refresh this page or contact support."
+				/>
+			) : users_list_query.isLoading ? (
+				<LoadingScreen />
+			) : null}
 		</DashboardLayout>
 	);
 }
@@ -158,7 +162,7 @@ function DataTable<TData, TValue>({columns, data}: DataTableProps<TData, TValue>
 			<div className="grid gap-4 mt-4">
 				<div>
 					<Input
-						placeholder="Filter patients..."
+						placeholder="Filter users..."
 						value={globalFilter?.globalFilter ?? ""}
 						onChange={(event) => {
 							table.setGlobalFilter(event.target.value);
@@ -188,21 +192,22 @@ function DataTable<TData, TValue>({columns, data}: DataTableProps<TData, TValue>
 						{table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row, row_index) => (
 								<TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-									{row.getVisibleCells().map((cell, index) => (
-										<TableCell key={cell.id}>
-											{index === 0 ? (
+									{row.getVisibleCells().map((cell, index) =>
+										index === 0 ? (
+											<TableCell key={cell.id} className="p-0">
 												<Link
-													to={`/dashboard/admin/patients/${
-														(data as PatientType[])[row_index]["id"]
-													}`}
+													className="block w-full h-full p-4 hover:underline hover:underline-offset-2"
+													to={`/dashboard/admin/users/${(data as OrgUser[])[row_index]["id"]}`}
 												>
 													{flexRender(cell.column.columnDef.cell, cell.getContext())}
 												</Link>
-											) : (
-												flexRender(cell.column.columnDef.cell, cell.getContext())
-											)}
-										</TableCell>
-									))}
+											</TableCell>
+										) : (
+											<TableCell key={cell.id}>
+												{flexRender(cell.column.columnDef.cell, cell.getContext())}
+											</TableCell>
+										)
+									)}
 								</TableRow>
 							))
 						) : (

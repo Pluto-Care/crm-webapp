@@ -4,6 +4,7 @@
 // react
 import {API_URL as AUTH_BACKEND_URL} from "@/config";
 import {ErrorType, handleAxiosError} from "@/lib/handleAxiosError";
+import {FULL_ACCESS} from "@/permissions/permissions";
 import {
 	AuthUserLastTokenSessionType,
 	AuthUserLastWebSessionType,
@@ -73,8 +74,7 @@ const usePermission = (id: string): boolean => {
 	let hasPermission = user_permissions_ids?.includes(id) || user?.role?.permissions?.includes(id);
 	if (!hasPermission) {
 		hasPermission =
-			user_permissions_ids?.includes("full_access") ||
-			user?.role?.permissions?.includes("full_access");
+			user_permissions_ids?.includes(FULL_ACCESS) || user?.role?.permissions?.includes(FULL_ACCESS);
 	}
 	return hasPermission ?? false;
 };
