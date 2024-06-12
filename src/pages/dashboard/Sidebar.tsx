@@ -1,5 +1,6 @@
 import {
 	Bell,
+	CalendarCheck,
 	ContactIcon,
 	HomeIcon,
 	Menu,
@@ -35,6 +36,11 @@ const adminMenu: SidebarMenuItem[] = [
 		path: "/dashboard/admin/patients",
 		need_permission: READ_ALL_PATIENTS,
 	},
+	{
+		title: "Appointments",
+		Icon: CalendarCheck,
+		path: "/dashboard/admin/appointments",
+	},
 ];
 
 const forYouMenu: SidebarMenuItem[] = [
@@ -49,7 +55,7 @@ const forYouMenu: SidebarMenuItem[] = [
 		path: "/dashboard/my/patients",
 	},
 	{
-		title: "Appointment Calendar",
+		title: "My Appointments",
 		Icon: Users,
 		path: "/dashboard/my/appointments",
 	},
@@ -95,12 +101,12 @@ export default function Sidebar() {
 				</div>
 				<div className="flex-1">
 					<nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-						<SidebarItemMenu menuTitle="Admin Menu" items={adminMenu} />
-						<SidebarItemMenu menuTitle="For You Menu" items={forYouMenu} />
+						<SidebarItemMenu menuTitle="Manage" items={adminMenu} />
+						<SidebarItemMenu menuTitle="For You" items={forYouMenu} />
 						<SidebarItemMenu menuTitle="Talks" items={talksMenu} />
 					</nav>
 				</div>
-				<div className="p-4 mt-auto">
+				<div className="mt-auto mb-4">
 					<nav className="grid items-start px-2 text-sm font-medium lg:px-4">
 						<SidebarItemMenu items={bottomNavMenu} />
 					</nav>
@@ -121,8 +127,8 @@ export function SidebarMobile() {
 			</SheetTrigger>
 			<SheetContent side="left" className="flex flex-col">
 				<nav className="grid gap-2 text-lg font-medium">
-					<SidebarItemMenu menuTitle="Admin Menu" items={adminMenu} isMobile={true} />
-					<SidebarItemMenu menuTitle="For You Menu" items={forYouMenu} isMobile={true} />
+					<SidebarItemMenu menuTitle="Manage" items={adminMenu} isMobile={true} />
+					<SidebarItemMenu menuTitle="For You" items={forYouMenu} isMobile={true} />
 					<SidebarItemMenu menuTitle="Talks" items={talksMenu} isMobile={true} />
 				</nav>
 				<div className="mt-auto">

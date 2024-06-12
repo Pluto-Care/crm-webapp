@@ -26,6 +26,9 @@ const LoginPage = React.lazy(() => import("@/pages/login/_index"));
 const AdminPatientsDashboard = React.lazy(() => import("@/pages/dashboard/admin/patients/_index"));
 const AdminUsersDashboard = React.lazy(() => import("@/pages/dashboard/admin/users/_index"));
 const UserDetailPage = React.lazy(() => import("@/pages/dashboard/admin/users/user/_index"));
+const AdminAppointmentsDashboard = React.lazy(
+	() => import("@/pages/dashboard/admin/appointments/_index")
+);
 
 export default function App() {
 	const {refresh, loading, error, isSuccess} = useRefresh();
@@ -133,6 +136,24 @@ export default function App() {
 									}
 								>
 									<UserDetailPage />
+								</HasPermission>
+							</SW>
+						}
+					/>
+					<Route
+						path={"/dashboard/admin/appointments"}
+						element={
+							<SW>
+								<HasPermission
+									id={READ_ALL_USERS}
+									fallback={
+										<ErrorPageFallback
+											title="Permission Denied"
+											message="You do not have permission to view this page."
+										/>
+									}
+								>
+									<AdminAppointmentsDashboard />
 								</HasPermission>
 							</SW>
 						}
