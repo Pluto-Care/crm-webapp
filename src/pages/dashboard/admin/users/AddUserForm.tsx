@@ -79,32 +79,34 @@ export default function AddUserForm(props: {children: React.ReactNode}) {
 					<Form {...form}>
 						<form onSubmit={form.handleSubmit(onSubmit)}>
 							<div className="my-8 space-y-4">
-								<FormField
-									control={form.control}
-									name="first_name"
-									render={({field}) => (
-										<FormItem>
-											<FormLabel>First name</FormLabel>
-											<FormControl>
-												<Input {...field} />
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-								<FormField
-									control={form.control}
-									name="last_name"
-									render={({field}) => (
-										<FormItem>
-											<FormLabel>Last name</FormLabel>
-											<FormControl>
-												<Input {...field} />
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
+								<div className="grid grid-cols-2 gap-4">
+									<FormField
+										control={form.control}
+										name="first_name"
+										render={({field}) => (
+											<FormItem>
+												<FormLabel>First name</FormLabel>
+												<FormControl>
+													<Input {...field} />
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="last_name"
+										render={({field}) => (
+											<FormItem>
+												<FormLabel>Last name</FormLabel>
+												<FormControl>
+													<Input {...field} />
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+								</div>
 								<FormField
 									control={form.control}
 									name="email"

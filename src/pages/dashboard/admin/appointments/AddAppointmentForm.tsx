@@ -31,6 +31,7 @@ import {Popover, PopoverTrigger} from "@/components/ui/popover";
 import {PopoverContent} from "@radix-ui/react-popover";
 import {cn} from "@/lib/utils";
 import {Textarea} from "@/components/ui/textarea";
+import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 
 const addAppointmentSchema = z.object({
 	patient: z.string(),
@@ -79,27 +80,17 @@ export default function AddAppointmentForm(props: {children: React.ReactNode}) {
 						)}
 						<Form {...form}>
 							<form onSubmit={form.handleSubmit(onSubmit)}>
-								<DialogDescription className="px-4 py-2 mb-6 text-base font-medium bg-muted text-foreground">
-									Patient Information
-								</DialogDescription>
-								<div className="grid grid-cols-2 gap-4 mb-12">
+								<div className="grid grid-cols-3 gap-8 mb-4">
 									<FormField
 										control={form.control}
 										name="patient"
 										render={({field}) => (
-											<FormItem className="grid items-center w-full grid-cols-4 gap-4 space-y-0">
-												<FormLabel className="text-right">Patient</FormLabel>
-												<FormControl className="col-span-3">
+											<FormItem>
+												<FormLabel>Patient</FormLabel>
+												<FormControl>
 													<Input {...field} />
 												</FormControl>
-												{form.formState.errors.patient && (
-													<>
-														<div></div>
-														<div className="w-full col-span-3">
-															<FormMessage />
-														</div>
-													</>
-												)}
+												{form.formState.errors.patient && <FormMessage />}
 											</FormItem>
 										)}
 									/>
@@ -107,33 +98,51 @@ export default function AddAppointmentForm(props: {children: React.ReactNode}) {
 										control={form.control}
 										name="assigned_to"
 										render={({field}) => (
-											<FormItem className="grid items-center w-full grid-cols-4 gap-4 space-y-0">
-												<FormLabel className="text-right">Assigned To</FormLabel>
-												<FormControl className="col-span-3">
+											<FormItem>
+												<FormLabel>Assigned To</FormLabel>
+												<FormControl>
 													<Input {...field} />
 												</FormControl>
-												{form.formState.errors.assigned_to && (
-													<>
-														<div></div>
-														<div className="w-full col-span-3">
-															<FormMessage />
-														</div>
-													</>
-												)}
+												{form.formState.errors.assigned_to && <FormMessage />}
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="status"
+										render={({field}) => (
+											<FormItem>
+												<FormLabel>Status</FormLabel>
+												<Select
+													onValueChange={field.onChange}
+													defaultValue={(field.value ?? "").toString()}
+												>
+													<FormControl>
+														<SelectTrigger>
+															<SelectValue placeholder="Appointment Current Status" />
+														</SelectTrigger>
+													</FormControl>
+													<SelectContent>
+														{["pending", "accepted", "completed"].map((status, index) => (
+															<SelectItem key={index} value={status}>
+																{status}
+															</SelectItem>
+														))}
+													</SelectContent>
+												</Select>
+												{form.formState.errors.status && <FormMessage />}
 											</FormItem>
 										)}
 									/>
 								</div>
-								<DialogDescription className="px-4 py-2 mb-6 text-base font-medium bg-muted text-foreground">
-									Schedule
-								</DialogDescription>
-								<div className="grid grid-cols-2 gap-4 mb-4">
+								<div className="mb-4 space-y-4">
 									<FormField
 										control={form.control}
 										name="date"
 										render={({field}) => (
-											<FormItem className="grid items-center w-full grid-cols-4 gap-4 space-y-0">
-												<FormLabel className="text-right">Start At</FormLabel>
+											<FormItem>
+												<FormLabel>Date</FormLabel>
+												<br />
 												<Popover>
 													<PopoverTrigger asChild>
 														<FormControl>
@@ -153,127 +162,91 @@ export default function AddAppointmentForm(props: {children: React.ReactNode}) {
 															</Button>
 														</FormControl>
 													</PopoverTrigger>
-													<PopoverContent className="w-auto p-0" align="start">
+													<PopoverContent
+														className="w-auto p-0 border rounded-lg shadow bg-card"
+														align="start"
+													>
 														<Calendar
 															mode="single"
 															selected={field.value}
 															onSelect={field.onChange}
-															disabled={(date) =>
-																date > new Date() || date < new Date("1900-01-01")
-															}
+															disabled={(date) => {
+																const today = new Date();
+																const yesterday = new Date(today - 1000 * 60 * 60 * 24);
+																return date < yesterday;
+															}}
 															initialFocus
 														/>
 													</PopoverContent>
 												</Popover>
-												{form.formState.errors.date && (
-													<>
-														<div></div>
-														<div className="w-full col-span-3">
-															<FormMessage />
-														</div>
-													</>
-												)}
-											</FormItem>
-										)}
-									/>
-
-									<FormField
-										control={form.control}
-										name="start_time"
-										render={({field}) => (
-											<FormItem className="grid items-center w-full grid-cols-4 gap-4 space-y-0">
-												<FormLabel className="text-right">Start Time</FormLabel>
-												<FormControl className="col-span-3">
-													<Input {...field} />
-												</FormControl>
-												{form.formState.errors.start_time && (
-													<>
-														<div></div>
-														<div className="w-full col-span-3">
-															<FormMessage />
-														</div>
-													</>
-												)}
-											</FormItem>
-										)}
-									/>
-									<FormField
-										control={form.control}
-										name="end_time"
-										render={({field}) => (
-											<FormItem className="grid items-center w-full grid-cols-4 gap-4 space-y-0">
-												<FormLabel className="text-right">End Time</FormLabel>
-												<FormControl className="col-span-3">
-													<Input {...field} />
-												</FormControl>
-												{form.formState.errors.end_time && (
-													<>
-														<div></div>
-														<div className="w-full col-span-3">
-															<FormMessage />
-														</div>
-													</>
-												)}
+												{form.formState.errors.date && <FormMessage />}
 											</FormItem>
 										)}
 									/>
 								</div>
-								<div className="grid grid-cols-2 gap-4 mt-4 mb-8">
+								<div className="grid items-start grid-cols-3 gap-8 mb-4">
+									<div className="col-span-2">
+										<FormField
+											control={form.control}
+											name="start_time"
+											render={({field}) => (
+												<FormItem>
+													<FormLabel>Start Time</FormLabel>
+													<RadioGroup
+														onValueChange={field.onChange}
+														defaultValue={field.value}
+														className="block"
+													>
+														{slots("08:00", "18:00").map((time, index) => (
+															<FormItem className="inline-block w-max">
+																<FormControl key={index}>
+																	<RadioGroupItem value={time} id={time} className="sr-only peer" />
+																</FormControl>
+																<FormLabel
+																	htmlFor={time}
+																	className="flex cursor-pointer mr-2 flex-col items-center justify-between rounded-md border bg-popover px-4 py-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:outline-2 peer-data-[state=checked]:outline peer-data-[state=checked]:outline-primary [&:has([data-state=checked])]:outline-primary"
+																>
+																	{time}
+																</FormLabel>
+															</FormItem>
+														))}
+													</RadioGroup>
+													{form.formState.errors.start_time && <FormMessage />}
+												</FormItem>
+											)}
+										/>
+									</div>
+									<div>
+										<FormField
+											control={form.control}
+											name="end_time"
+											render={({field}) => (
+												<FormItem>
+													<FormLabel>End Time</FormLabel>
+													<FormControl>
+														<Input {...field} />
+													</FormControl>
+													{form.formState.errors.end_time && <FormMessage />}
+												</FormItem>
+											)}
+										/>
+									</div>
+								</div>
+								<div>
 									<FormField
 										control={form.control}
 										name="reason"
 										render={({field}) => (
-											<FormItem className="grid items-center w-full grid-cols-4 gap-4 space-y-0">
-												<FormLabel className="text-right">Reason</FormLabel>
-												<FormControl className="col-span-3">
+											<FormItem>
+												<FormLabel>Reason</FormLabel>
+												<FormControl>
 													<Textarea
 														placeholder="Reason for the appointment"
-														className="resize-none"
+														className="max-w-lg resize-none"
 														{...field}
 													/>
 												</FormControl>
-												{form.formState.errors.reason && (
-													<>
-														<div></div>
-														<div className="w-full col-span-3">
-															<FormMessage />
-														</div>
-													</>
-												)}
-											</FormItem>
-										)}
-									/>
-									<FormField
-										control={form.control}
-										name="status"
-										render={({field}) => (
-											<FormItem className="grid items-center w-full grid-cols-4 gap-4 space-y-0">
-												<FormLabel className="text-right">Status</FormLabel>
-												<Select
-													onValueChange={field.onChange}
-													defaultValue={(field.value ?? "").toString()}
-												>
-													<FormControl>
-														<SelectTrigger>
-															<SelectValue placeholder="Appointment Current Status" />
-														</SelectTrigger>
-													</FormControl>
-													<SelectContent>
-														{["pending", "accepted", "completed"].map((status, index) => (
-															<SelectItem key={index} value={status}>
-																{status}
-															</SelectItem>
-														))}
-													</SelectContent>
-												</Select>
-												{form.formState.errors.status && (
-													<>
-														<div></div>
-														<div className="w-full col-span-3">
-															<FormMessage />
-														</div>
-													</>
-												)}
+												{form.formState.errors.reason && <FormMessage />}
 											</FormItem>
 										)}
 									/>
@@ -290,5 +263,22 @@ export default function AddAppointmentForm(props: {children: React.ReactNode}) {
 				</div>
 			</DialogContent>
 		</Dialog>
+	);
+}
+
+const toMinutes = (str: string) =>
+	str.split(":").reduce((h, m) => (parseInt(h) * 60 + +m).toString());
+
+const toString = (min: number) => {
+	const minute = min % 60;
+	// append 0 if minute is less than 10
+	return `${Math.floor(min / 60)}:${minute < 10 ? "0" + minute : minute}`;
+};
+
+function slots(startStr: string, endStr = "16:00") {
+	const start: string = toMinutes(startStr);
+	const end: string = toMinutes(endStr);
+	return Array.from({length: Math.floor((parseInt(end) - parseInt(start)) / 30) + 1}, (_, i) =>
+		toString(parseInt(start) + i * 30)
 	);
 }
