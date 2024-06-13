@@ -1,4 +1,4 @@
-import {Hospital, MoonStarIcon, SunIcon} from "lucide-react";
+import {Hospital, LogOut, MoonStarIcon, Settings, SunIcon} from "lucide-react";
 
 import {Button} from "@/components/ui/button";
 import {
@@ -71,9 +71,17 @@ export default function Topbar({organization}: {organization: OrgType | undefine
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
-						<DropdownMenuItem>Settings</DropdownMenuItem>
+						<DropdownMenuItem className="flex items-center gap-2 pr-8">
+							<Settings className="size-4" />
+							Settings
+						</DropdownMenuItem>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem onClick={signOut} disabled={loading}>
+						<DropdownMenuItem
+							className="flex items-center gap-2 pr-8"
+							onClick={signOut}
+							disabled={loading}
+						>
+							<LogOut className="size-4" />
 							Logout
 						</DropdownMenuItem>
 					</DropdownMenuContent>

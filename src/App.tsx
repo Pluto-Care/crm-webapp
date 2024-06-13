@@ -19,7 +19,8 @@ import {AxiosRequestErrorDetail, ErrorType} from "@/lib/handleAxiosError";
 import ErrorPageFallback from "./components/utils/ErrorPageFallback";
 import PatientDetailPage from "./pages/dashboard/admin/patients/patient/_index";
 import {LoadingScreen} from "./components/utils/LoadingScreen";
-import {READ_ALL_PATIENTS, READ_ALL_USERS} from "./permissions/permissions";
+import {READ_ALL_PATIENTS, READ_ALL_USERS, VIEW_APPOINTMENTS} from "./permissions/permissions";
+import AppointmentsDashboard from "./pages/dashboard/my/appointments/_index";
 
 const Dashboard = React.lazy(() => import("@/pages/dashboard/_index"));
 const LoginPage = React.lazy(() => import("@/pages/login/_index"));
@@ -145,7 +146,7 @@ export default function App() {
 						element={
 							<SW>
 								<HasPermission
-									id={READ_ALL_USERS}
+									id={VIEW_APPOINTMENTS}
 									fallback={
 										<ErrorPageFallback
 											title="Permission Denied"
@@ -155,6 +156,14 @@ export default function App() {
 								>
 									<AdminAppointmentsDashboard />
 								</HasPermission>
+							</SW>
+						}
+					/>
+					<Route
+						path={"/dashboard/my/appointments"}
+						element={
+							<SW>
+								<AppointmentsDashboard />
 							</SW>
 						}
 					/>

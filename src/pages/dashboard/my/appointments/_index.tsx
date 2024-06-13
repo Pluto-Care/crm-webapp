@@ -24,19 +24,16 @@ import {
 import {useQuery} from "@tanstack/react-query";
 import {useState} from "react";
 import {Skeleton} from "@/components/ui/skeleton";
-import {HasPermission} from "@/contexts/auth";
 import {Link} from "react-router-dom";
 import {Helmet} from "react-helmet";
 import {APP_NAME} from "@/config";
 import {ErrorMessageAlert} from "@/components/utils/ErrorMessageAlert";
 import {LoadingScreen} from "@/components/utils/LoadingScreen";
-import {MAKE_APPPOINTMENTS} from "@/permissions/permissions";
-import {getOrgAppointmentListAPI} from "@/services/api/appointment/admin/list";
 import {AppointmentType} from "@/types/appointment";
-import AddAppointmentForm from "./AddAppointmentForm";
 import {datePretty, timePretty} from "@/lib/dateTimeUtils";
 import {formatPhoneNumber} from "@/lib/phoneNumberFormatter";
 import {Badge} from "@/components/ui/badge";
+import {getMyAppointmentListAPI} from "@/services/api/appointment/my/list";
 
 export const columns: ColumnDef<AppointmentType>[] = [
 	{
@@ -105,21 +102,21 @@ interface DataTableProps<TData, TValue> {
 	data: TData[];
 }
 
-export default function AdminAppointmentsDashboard() {
+export default function AppointmentsDashboard() {
 	const apt_list_query = useQuery({
-		queryKey: ["org_appointment_list"],
-		queryFn: () => getOrgAppointmentListAPI(),
+		queryKey: ["my_appointment_list"],
+		queryFn: () => getMyAppointmentListAPI(),
 		refetchOnWindowFocus: false,
 	});
 
 	return (
 		<DashboardLayout>
 			<Helmet>
-				<title>Appointments &mdash; {APP_NAME}</title>
+				<title>My Appointments &mdash; {APP_NAME}</title>
 			</Helmet>
 			<div className="flex mb-5">
 				<div className="flex-1">
-					<h1 className="text-xl font-semibold md:text-2xl">Appointment List</h1>
+					<h1 className="text-xl font-semibold md:text-2xl">My Appointments</h1>
 					{apt_list_query.isLoading ? (
 						<Skeleton className="w-48 h-6" />
 					) : (
@@ -128,13 +125,7 @@ export default function AdminAppointmentsDashboard() {
 						</p>
 					)}
 				</div>
-				<div>
-					<HasPermission id={MAKE_APPPOINTMENTS} fallback={<></>}>
-						<AddAppointmentForm>
-							<Button variant={"default"}>Create New Appoitment</Button>
-						</AddAppointmentForm>
-					</HasPermission>
-				</div>
+				<div></div>
 			</div>
 			{apt_list_query.isSuccess ? (
 				<DataTable columns={columns} data={apt_list_query.data} />

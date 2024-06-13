@@ -7,22 +7,22 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {useForm} from "react-hook-form";
+import {ControllerRenderProps, UseFormReturn, useForm} from "react-hook-form";
 import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {useMutation} from "@tanstack/react-query";
 import {useNavigate} from "react-router-dom";
-import {CalendarIcon, Loader2} from "lucide-react";
+import {
+	CalendarCheck,
+	CalendarIcon,
+	CircleCheckBig,
+	CircleDotDashed,
+	Loader2,
+	LucideIcon,
+} from "lucide-react";
 import {format} from "date-fns";
 import {createAppointmentAPI} from "@/services/api/appointment/admin/create";
 import {AppointmentType} from "@/types/appointment";
@@ -32,13 +32,27 @@ import {PopoverContent} from "@radix-ui/react-popover";
 import {cn} from "@/lib/utils";
 import {Textarea} from "@/components/ui/textarea";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
+import {debounce} from "lodash";
+import * as React from "react";
+import {Check, ChevronsUpDown} from "lucide-react";
+
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+} from "@/components/ui/command";
+import {searchPatientAPI} from "@/services/api/patients/admin/search";
+import {searchOrgUserAPI} from "@/services/api/organization/admin/search_user";
 
 const addAppointmentSchema = z.object({
 	patient: z.string(),
 	reason: z.string(),
 	date: z.date(),
 	start_time: z.string(),
-	end_time: z.string(),
+	duration: z.coerce.number().gte(1),
 	assigned_to: z.string(),
 	status: z.string(),
 });
@@ -59,8 +73,7 @@ export default function AddAppointmentForm(props: {children: React.ReactNode}) {
 	});
 
 	const onSubmit = (data: z.infer<typeof addAppointmentSchema>) => {
-		// TODO: Shape the data before sending to the server
-		//mutation.mutate(data);
+		mutation.mutate(data);
 	};
 
 	return (
@@ -87,9 +100,7 @@ export default function AddAppointmentForm(props: {children: React.ReactNode}) {
 										render={({field}) => (
 											<FormItem>
 												<FormLabel>Patient</FormLabel>
-												<FormControl>
-													<Input {...field} />
-												</FormControl>
+												<PatientSelector form={form} field={field} />
 												{form.formState.errors.patient && <FormMessage />}
 											</FormItem>
 										)}
@@ -100,9 +111,7 @@ export default function AddAppointmentForm(props: {children: React.ReactNode}) {
 										render={({field}) => (
 											<FormItem>
 												<FormLabel>Assigned To</FormLabel>
-												<FormControl>
-													<Input {...field} />
-												</FormControl>
+												<UserSelector form={form} field={field} />
 												{form.formState.errors.assigned_to && <FormMessage />}
 											</FormItem>
 										)}
@@ -110,26 +119,10 @@ export default function AddAppointmentForm(props: {children: React.ReactNode}) {
 									<FormField
 										control={form.control}
 										name="status"
-										render={({field}) => (
+										render={() => (
 											<FormItem>
 												<FormLabel>Status</FormLabel>
-												<Select
-													onValueChange={field.onChange}
-													defaultValue={(field.value ?? "").toString()}
-												>
-													<FormControl>
-														<SelectTrigger>
-															<SelectValue placeholder="Appointment Current Status" />
-														</SelectTrigger>
-													</FormControl>
-													<SelectContent>
-														{["pending", "accepted", "completed"].map((status, index) => (
-															<SelectItem key={index} value={status}>
-																{status}
-															</SelectItem>
-														))}
-													</SelectContent>
-												</Select>
+												<StatusBox form={form} />
 												{form.formState.errors.status && <FormMessage />}
 											</FormItem>
 										)}
@@ -172,8 +165,8 @@ export default function AddAppointmentForm(props: {children: React.ReactNode}) {
 															onSelect={field.onChange}
 															disabled={(date) => {
 																const today = new Date();
-																const yesterday = new Date(today - 1000 * 60 * 60 * 24);
-																return date < yesterday;
+																today.setDate(today.getDate() - 1);
+																return date < today;
 															}}
 															initialFocus
 														/>
@@ -198,8 +191,8 @@ export default function AddAppointmentForm(props: {children: React.ReactNode}) {
 														className="block"
 													>
 														{slots("08:00", "18:00").map((time, index) => (
-															<FormItem className="inline-block w-max">
-																<FormControl key={index}>
+															<FormItem className="inline-block w-max" key={index}>
+																<FormControl>
 																	<RadioGroupItem value={time} id={time} className="sr-only peer" />
 																</FormControl>
 																<FormLabel
@@ -219,14 +212,14 @@ export default function AddAppointmentForm(props: {children: React.ReactNode}) {
 									<div>
 										<FormField
 											control={form.control}
-											name="end_time"
+											name="duration"
 											render={({field}) => (
 												<FormItem>
-													<FormLabel>End Time</FormLabel>
+													<FormLabel>Duration (in minutes)</FormLabel>
 													<FormControl>
 														<Input {...field} />
 													</FormControl>
-													{form.formState.errors.end_time && <FormMessage />}
+													{form.formState.errors.duration && <FormMessage />}
 												</FormItem>
 											)}
 										/>
@@ -280,5 +273,297 @@ function slots(startStr: string, endStr = "16:00") {
 	const end: string = toMinutes(endStr);
 	return Array.from({length: Math.floor((parseInt(end) - parseInt(start)) / 30) + 1}, (_, i) =>
 		toString(parseInt(start) + i * 30)
+	);
+}
+
+function PatientSelector({
+	form,
+	field,
+}: {
+	form: UseFormReturn<z.infer<typeof addAppointmentSchema>>;
+	field: ControllerRenderProps<z.infer<typeof addAppointmentSchema>, "patient">;
+}) {
+	const [open, setOpen] = React.useState(false);
+	const [isLoading, setIsLoading] = React.useState(false);
+
+	const mutation = useMutation({
+		mutationKey: ["search_patient"],
+		mutationFn: (value: string) => searchPatientAPI(value),
+		onSuccess: () => {
+			setIsLoading(false);
+		},
+		onError: () => {
+			setIsLoading(false);
+		},
+	});
+
+	const changeKeyword = debounce((value: string) => {
+		if (value.length > 2) {
+			mutation.mutate(value);
+		}
+	}, 1000);
+
+	return (
+		<Popover open={open} onOpenChange={setOpen}>
+			<PopoverTrigger asChild>
+				<FormControl>
+					<Button
+						variant="outline"
+						role="combobox"
+						aria-expanded={open}
+						className="justify-between w-full"
+					>
+						{field.value && mutation.isSuccess && mutation.data.length > 0
+							? mutation.data
+									.filter((data) => data.id === field.value)
+									.map((data) => data.first_name + " " + data.last_name)
+							: "Select patient..."}
+						<ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+					</Button>
+				</FormControl>
+			</PopoverTrigger>
+			<PopoverContent className="z-10 -mt-1 border rounded-lg w-56 lg:w-64 xl:w-72 2xl:w-[20rem]">
+				<Command shouldFilter={false}>
+					<CommandInput
+						placeholder="Search patient..."
+						onValueChange={(keyword: string) => {
+							setIsLoading(keyword.length > 0);
+							changeKeyword(keyword);
+						}}
+					/>
+					<CommandList>
+						<CommandEmpty>
+							{isLoading ? (
+								<div className="flex justify-center">
+									<Loader2 className="w-4 h-4 animate-spin" />
+								</div>
+							) : mutation.isIdle ? (
+								<>Start typing a name</>
+							) : (
+								<>No patient found.</>
+							)}
+						</CommandEmpty>
+						<CommandGroup className="block">
+							{mutation.isSuccess
+								? mutation.data.map((patient) => (
+										<CommandItem
+											key={patient.id}
+											value={patient.id}
+											onSelect={() => {
+												form.setValue("patient", patient.id);
+												setOpen(false);
+											}}
+											className="block"
+										>
+											<div className="flex items-center gap-2">
+												<div className="size-4">
+													<Check
+														className={cn(
+															"h-4 w-4",
+															field.value === patient.id ? "opacity-100" : "opacity-0"
+														)}
+													/>
+												</div>
+												<div className="flex-1 overflow-hidden">
+													{patient.first_name} {patient.last_name}
+													<div className="text-[95%] text-muted-foreground whitespace-nowrap text-ellipsis">
+														{patient.phone} &mdash; {patient.city}, {patient.state}
+													</div>
+												</div>
+											</div>
+										</CommandItem>
+								  ))
+								: null}
+						</CommandGroup>
+					</CommandList>
+				</Command>
+			</PopoverContent>
+		</Popover>
+	);
+}
+
+function UserSelector({
+	form,
+	field,
+}: {
+	form: UseFormReturn<z.infer<typeof addAppointmentSchema>>;
+	field: ControllerRenderProps<z.infer<typeof addAppointmentSchema>, "assigned_to">;
+}) {
+	const [open, setOpen] = React.useState(false);
+	const [isLoading, setIsLoading] = React.useState(false);
+
+	const mutation = useMutation({
+		mutationKey: ["search_user"],
+		mutationFn: (value: string) => searchOrgUserAPI(value),
+		onSuccess: () => {
+			setIsLoading(false);
+		},
+		onError: () => {
+			setIsLoading(false);
+		},
+	});
+
+	const changeKeyword = debounce((value: string) => {
+		if (value.length > 2) {
+			mutation.mutate(value);
+		}
+	}, 1000);
+
+	return (
+		<Popover open={open} onOpenChange={setOpen}>
+			<PopoverTrigger asChild>
+				<FormControl>
+					<Button
+						variant="outline"
+						role="combobox"
+						aria-expanded={open}
+						className="justify-between w-full"
+					>
+						{field.value && mutation.isSuccess && mutation.data.length > 0
+							? mutation.data
+									.filter((data) => data.id === field.value)
+									.map((data) => data.first_name + " " + data.last_name)
+							: "Select user..."}
+						<ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+					</Button>
+				</FormControl>
+			</PopoverTrigger>
+			<PopoverContent className="z-10 p-0 -mt-1 border rounded-lg w-56 lg:w-64 xl:w-72 2xl:w-[20rem]">
+				<Command shouldFilter={false}>
+					<CommandInput
+						placeholder="Search user..."
+						onValueChange={(keyword: string) => {
+							setIsLoading(keyword.length > 0);
+							changeKeyword(keyword);
+						}}
+					/>
+					<CommandList>
+						<CommandEmpty>
+							{isLoading ? (
+								<div className="flex justify-center">
+									<Loader2 className="w-4 h-4 animate-spin" />
+								</div>
+							) : mutation.isIdle ? (
+								<>Start typing a name</>
+							) : (
+								<>No user found.</>
+							)}
+						</CommandEmpty>
+						<CommandGroup>
+							{mutation.isSuccess
+								? mutation.data.map((user) => (
+										<CommandItem
+											key={user.id}
+											value={user.id}
+											onSelect={() => {
+												form.setValue("assigned_to", user.id);
+												setOpen(false);
+											}}
+											className="block"
+										>
+											<div className="flex items-center gap-2">
+												<div className="size-4">
+													<Check
+														className={cn(
+															"h-4 w-4",
+															field.value === user.id ? "opacity-100" : "opacity-0"
+														)}
+													/>
+												</div>
+												<div className="flex-1 overflow-hidden">
+													{user.first_name} {user.last_name}
+													<div className="text-[95%] text-muted-foreground whitespace-nowrap text-ellipsis">
+														{user.email}
+													</div>
+												</div>
+											</div>
+										</CommandItem>
+								  ))
+								: null}
+						</CommandGroup>
+					</CommandList>
+				</Command>
+			</PopoverContent>
+		</Popover>
+	);
+}
+
+type Status = {
+	value: string;
+	label: string;
+	icon: LucideIcon;
+};
+
+const statuses: Status[] = [
+	{
+		value: "pending",
+		label: "Pending",
+		icon: CircleDotDashed,
+	},
+	{
+		value: "accepted",
+		label: "Accepted",
+		icon: CalendarCheck,
+	},
+	{
+		value: "completed",
+		label: "Completed",
+		icon: CircleCheckBig,
+	},
+];
+
+function StatusBox({form}: {form: UseFormReturn<z.infer<typeof addAppointmentSchema>>}) {
+	const [open, setOpen] = React.useState(false);
+	const [selectedStatus, setSelectedStatus] = React.useState<Status | null>(null);
+
+	return (
+		<div>
+			<Popover open={open} onOpenChange={setOpen}>
+				<PopoverTrigger asChild>
+					<FormControl>
+						<Button variant="outline" className="justify-start w-full">
+							{selectedStatus ? (
+								<>
+									<selectedStatus.icon className="w-4 h-4 mr-2 shrink-0" />
+									{selectedStatus.label}
+								</>
+							) : (
+								<>+ Set status</>
+							)}
+						</Button>
+					</FormControl>
+				</PopoverTrigger>
+				<PopoverContent className="p-0 mt-1 border rounded-md" side="bottom" align="start">
+					<Command>
+						<CommandList>
+							<CommandEmpty>No results found.</CommandEmpty>
+							<CommandGroup>
+								{statuses.map((status) => (
+									<CommandItem
+										key={status.value}
+										value={status.value}
+										onSelect={(value) => {
+											setSelectedStatus(
+												statuses.find((priority) => priority.value === value) || null
+											);
+											form.setValue("status", value);
+											setOpen(false);
+										}}
+									>
+										<status.icon
+											className={cn(
+												"mr-2 h-4 w-4",
+												status.value === selectedStatus?.value ? "opacity-100" : "opacity-40"
+											)}
+										/>
+										<span className="pr-16">{status.label}</span>
+									</CommandItem>
+								))}
+							</CommandGroup>
+						</CommandList>
+					</Command>
+				</PopoverContent>
+			</Popover>
+		</div>
 	);
 }

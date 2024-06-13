@@ -21,6 +21,9 @@ export const READ_ALL_LOGS = "read:all_logs";
 export const READ_ALL_USERS = "read:all_users";
 export const MODIFY_USER_ROLE = "update:user_role";
 export const MODIFY_USER_PERMISSIONS = "update:user_permissions";
+export const MAKE_APPPOINTMENTS = "make:appointments";
+export const VIEW_APPOINTMENTS = "view:appointments";
+export const MODIFY_APPOINTMENTS = "modify:appointments";
 
 // Catgeorized permissions
 
@@ -65,4 +68,17 @@ export const ORGANIZATION_PERMISSIONS: CustomPermissionType[] = [
 
 export const LOGS_PERMISSIONS: CustomPermissionType[] = [
 	{id: READ_ALL_LOGS, name: "Read all logs"},
+];
+
+export const APPOINTMENT_PERMISSIONS: CustomPermissionType[] = [
+	{
+		id: MAKE_APPPOINTMENTS,
+		name: "Make appointments",
+	},
+	{
+		id: VIEW_APPOINTMENTS,
+		name: "Read all appointments",
+		description: "This is an Admin level permission to view all appointments in organization.",
+	},
+	{id: MODIFY_APPOINTMENTS, name: "Modify appointments"},
 ];

@@ -23,7 +23,7 @@ import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {useMutation} from "@tanstack/react-query";
-import {createPatientAPI} from "@/services/api/patients/create";
+import {createPatientAPI} from "@/services/api/patients/admin/create";
 import {useNavigate} from "react-router-dom";
 import {Loader2} from "lucide-react";
 import {format} from "date-fns";

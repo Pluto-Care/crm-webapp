@@ -2,6 +2,7 @@ import {Button} from "@/components/ui/button";
 import {Checkbox} from "@/components/ui/checkbox";
 import {FormField} from "@/components/ui/form";
 import {
+	APPOINTMENT_PERMISSIONS,
 	CustomPermissionType,
 	LOGS_PERMISSIONS,
 	ORGANIZATION_PERMISSIONS,
@@ -106,6 +107,12 @@ export function PermissionsTab(props: IPermissionsTabProps) {
 						form={form}
 						title="Logs"
 						permissions={LOGS_PERMISSIONS}
+						user_perms={props.permissions}
+					/>
+					<PermissionSection
+						form={form}
+						title="Appointments"
+						permissions={APPOINTMENT_PERMISSIONS}
 						user_perms={props.permissions}
 					/>
 					<Button disabled={mutation.isPending}>

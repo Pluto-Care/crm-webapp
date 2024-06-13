@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import {useQuery} from "@tanstack/react-query";
-import {getOrgPatientListAPI} from "@/services/api/patients/list";
+import {getOrgPatientListAPI} from "@/services/api/patients/admin/list";
 import {useState} from "react";
 import {Skeleton} from "@/components/ui/skeleton";
 import AddPatientForm from "./AddPatientForm";

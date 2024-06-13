@@ -10,7 +10,7 @@ import {ErrorMessageAlert} from "@/components/utils/ErrorMessageAlert";
 import {LoadingScreen} from "@/components/utils/LoadingScreen";
 import {APP_NAME} from "@/config";
 import DashboardLayout from "@/pages/dashboard/_layout";
-import {getPatientAPI} from "@/services/api/patients/single_patient/get";
+import {getPatientAPI} from "@/services/api/patients/admin/single_patient/get";
 import {PatientType} from "@/types/patient";
 import {Label} from "@radix-ui/react-dropdown-menu";
 import {useQuery} from "@tanstack/react-query";
