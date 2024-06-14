@@ -34,6 +34,7 @@ import {ErrorMessageAlert} from "@/components/utils/ErrorMessageAlert";
 import {LoadingScreen} from "@/components/utils/LoadingScreen";
 import {CREATE_USERS} from "@/permissions/permissions";
 import AddUserForm from "./AddUserForm";
+import SunRays from "@/components/utils/SunRays";
 
 export const columns: ColumnDef<OrgUser>[] = [
 	{
@@ -101,6 +102,7 @@ export default function AdminUsersDashboard() {
 			<Helmet>
 				<title>Patients &mdash; {APP_NAME}</title>
 			</Helmet>
+			<SunRays color="blue" />
 			<div className="flex mb-5">
 				<div className="flex-1">
 					<h1 className="text-xl font-semibold md:text-2xl">Users List</h1>

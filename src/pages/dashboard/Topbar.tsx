@@ -20,7 +20,7 @@ export default function Topbar({organization}: {organization: OrgType | undefine
 	const {loading, signOut} = useSignOut();
 
 	return (
-		<header className="sticky top-0 z-10 bg-white dark:bg-zinc-950 flex h-14 items-center gap-4 border-b px-4 lg:h-[60px] lg:px-6">
+		<header className="sticky top-0 z-10 bg-background md:bg-transparent flex h-14 items-center gap-4 border-b px-4 lg:h-[60px] lg:px-6">
 			<SidebarMobile />
 			<div className="flex-1 w-full">
 				<h4>Welcome, {auth_context.user?.detail.first_name}</h4>
@@ -29,7 +29,7 @@ export default function Topbar({organization}: {organization: OrgType | undefine
 				<div className="flex items-center">
 					<Button
 						variant={"outline"}
-						className="p-0 border-0 rounded-lg aspect-square"
+						className="p-0 bg-transparent border-0 rounded-lg hover:bg-black/5 hover:dark:bg-white/10 aspect-square"
 						onClick={() => {
 							setTheme(theme === "dark" ? "light" : "dark");
 						}}

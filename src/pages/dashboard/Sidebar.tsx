@@ -7,7 +7,6 @@ import {
 	MessagesSquareIcon,
 	PhoneCallIcon,
 	Users,
-	UsersIcon,
 	ZapIcon,
 } from "lucide-react";
 import {Button} from "@/components/ui/button";
@@ -26,7 +25,7 @@ const adminMenu: SidebarMenuItem[] = [
 	},
 	{
 		title: "Patients",
-		Icon: UsersIcon,
+		Icon: Users,
 		path: "/dashboard/admin/patients",
 		need_permission: READ_ALL_PATIENTS,
 	},
@@ -46,12 +45,12 @@ const forYouMenu: SidebarMenuItem[] = [
 	},
 	{
 		title: "My Patients",
-		Icon: ContactIcon,
+		Icon: Users,
 		path: "/dashboard/my/patients",
 	},
 	{
 		title: "My Appointments",
-		Icon: Users,
+		Icon: CalendarCheck,
 		path: "/dashboard/my/appointments",
 	},
 ];

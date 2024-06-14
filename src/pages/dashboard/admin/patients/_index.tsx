@@ -32,6 +32,7 @@ import {Link} from "react-router-dom";
 import {Helmet} from "react-helmet";
 import {APP_NAME} from "@/config";
 import {CREATE_PATIENTS} from "@/permissions/permissions";
+import SunRays from "@/components/utils/SunRays";
 
 export const columns: ColumnDef<PatientType>[] = [
 	{
@@ -103,6 +104,7 @@ export default function AdminPatientsDashboard() {
 			<Helmet>
 				<title>Patients &mdash; {APP_NAME}</title>
 			</Helmet>
+			<SunRays color="red" />
 			<div className="flex mb-5">
 				<div className="flex-1">
 					<h1 className="text-xl font-semibold md:text-2xl">Patient List</h1>

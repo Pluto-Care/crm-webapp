@@ -37,6 +37,7 @@ import AddAppointmentForm from "./AddAppointmentForm";
 import {datePretty, timePretty} from "@/lib/dateTimeUtils";
 import {formatPhoneNumber} from "@/lib/phoneNumberFormatter";
 import {Badge} from "@/components/ui/badge";
+import SunRays from "@/components/utils/SunRays";
 
 export const columns: ColumnDef<AppointmentType>[] = [
 	{
@@ -121,6 +122,7 @@ export default function AdminAppointmentsDashboard() {
 			<Helmet>
 				<title>Appointments &mdash; {APP_NAME}</title>
 			</Helmet>
+			<SunRays color="purple" />
 			<div className="flex mb-5">
 				<div className="flex-1">
 					<h1 className="text-xl font-semibold md:text-2xl">Appointment List</h1>
