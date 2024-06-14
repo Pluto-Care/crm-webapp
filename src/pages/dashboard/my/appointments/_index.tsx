@@ -43,7 +43,7 @@ export const columns: ColumnDef<AppointmentType>[] = [
 	},
 	{
 		header: "Scheduled Date",
-		accessorFn: (row) => datePretty(row.start_at) + " at " + timePretty(row.start_at),
+		accessorFn: (row) => datePretty(row.start_time) + " at " + timePretty(row.start_time),
 	},
 	{
 		accessorKey: "status",
@@ -53,6 +53,10 @@ export const columns: ColumnDef<AppointmentType>[] = [
 		header: "Assigned To",
 		accessorFn: (row) =>
 			row.assigned_to ? `${row.assigned_to.first_name} ${row.assigned_to.last_name}` : null,
+	},
+	{
+		accessorKey: "type",
+		header: "Type",
 	},
 	{
 		header: "Created By",

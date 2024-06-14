@@ -18,7 +18,7 @@ export type SearchPatientResponseType = {
  */
 export async function searchPatientAPI(keyword: string) {
 	const res = await axios.post(
-		API_URL + "/api/patient/search/",
+		API_URL + "/api/patients/search/",
 		{keyword: keyword},
 		{
 			headers: {

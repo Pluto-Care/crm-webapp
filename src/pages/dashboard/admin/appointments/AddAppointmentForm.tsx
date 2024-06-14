@@ -15,17 +15,9 @@ import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {useMutation} from "@tanstack/react-query";
 import {useNavigate} from "react-router-dom";
-import {
-	CalendarCheck,
-	CalendarIcon,
-	CircleCheckBig,
-	CircleDotDashed,
-	Loader2,
-	LucideIcon,
-} from "lucide-react";
+import {CalendarIcon, Loader2} from "lucide-react";
 import {format} from "date-fns";
-import {createAppointmentAPI} from "@/services/api/appointment/admin/create";
-import {AppointmentType} from "@/types/appointment";
+import {CreateAppointmentType, createAppointmentAPI} from "@/services/api/appointment/admin/create";
 import {Calendar} from "@/components/ui/calendar";
 import {Popover, PopoverTrigger} from "@/components/ui/popover";
 import {PopoverContent} from "@radix-ui/react-popover";
@@ -51,22 +43,26 @@ const addAppointmentSchema = z.object({
 	patient: z.string(),
 	reason: z.string(),
 	date: z.date(),
+	type: z.enum(["in-person", "video", "phone"]),
 	start_time: z.string(),
-	duration: z.coerce.number().gte(1),
+	duration: z.coerce.number({message: "Duration should be a number greater than 0"}).gte(1),
 	assigned_to: z.string(),
-	status: z.string(),
+	status: z.enum(["rescheduled", "cancelled", "completed", "confirmed"]),
 });
 
 export default function AddAppointmentForm(props: {children: React.ReactNode}) {
 	const navigate = useNavigate();
 	const form = useForm<z.infer<typeof addAppointmentSchema>>({
 		resolver: zodResolver(addAppointmentSchema),
+		defaultValues: {
+			status: "confirmed",
+		},
 	});
 
 	//mutation
 	const mutation = useMutation({
 		mutationKey: ["addPatient"],
-		mutationFn: (data: unknown) => createAppointmentAPI(data as AppointmentType),
+		mutationFn: (data: CreateAppointmentType) => createAppointmentAPI(data),
 		onSuccess: (data) => {
 			navigate("/dashboard/admin/appointment/" + data.id);
 		},
@@ -79,180 +75,223 @@ export default function AddAppointmentForm(props: {children: React.ReactNode}) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>{props.children}</DialogTrigger>
-			<DialogContent className="w-full h-full min-w-full">
-				<div className="container relative mx-auto overflow-y-scroll">
-					<DialogHeader>
-						<DialogTitle className="text-2xl">New Appointment</DialogTitle>
-						<DialogDescription>Fill in the details below to make an appointment.</DialogDescription>
-					</DialogHeader>
-					<div className="max-w-5xl py-8 mx-auto mt-8">
-						{mutation.isError && (
-							<div className="p-4 mb-4 text-red-600 bg-red-100 border border-red-300 rounded">
-								{mutation.error.message}
+			<DialogContent className="min-w-[70rem]">
+				<DialogHeader>
+					<DialogTitle className="text-2xl">New Appointment</DialogTitle>
+					<DialogDescription>Fill in the details below to make an appointment.</DialogDescription>
+				</DialogHeader>
+				<div className="mt-2">
+					{mutation.isError && (
+						<div className="p-4 mb-4 text-red-600 bg-red-100 border border-red-300 rounded">
+							{mutation.error.message}
+						</div>
+					)}
+					<Form {...form}>
+						<form onSubmit={form.handleSubmit(onSubmit)}>
+							<div className="grid grid-cols-3 gap-8 mb-4">
+								<FormField
+									control={form.control}
+									name="patient"
+									render={({field}) => (
+										<FormItem>
+											<FormLabel>Patient</FormLabel>
+											<PatientSelector form={form} field={field} />
+											{form.formState.errors.patient && <FormMessage />}
+										</FormItem>
+									)}
+								/>
+								<FormField
+									control={form.control}
+									name="assigned_to"
+									render={({field}) => (
+										<FormItem>
+											<FormLabel>Assigned To</FormLabel>
+											<UserSelector form={form} field={field} />
+											{form.formState.errors.assigned_to && <FormMessage />}
+										</FormItem>
+									)}
+								/>
+								<FormField
+									control={form.control}
+									name="status"
+									render={() => (
+										<FormItem>
+											<FormLabel>Status</FormLabel>
+											<Input disabled={true} value={"Confirmed"} />
+											{/* <StatusBox form={form} /> */}
+											{form.formState.errors.status && <FormMessage />}
+										</FormItem>
+									)}
+								/>
 							</div>
-						)}
-						<Form {...form}>
-							<form onSubmit={form.handleSubmit(onSubmit)}>
-								<div className="grid grid-cols-3 gap-8 mb-4">
+							<div className="grid items-start grid-cols-3 gap-8 mb-4">
+								<FormField
+									control={form.control}
+									name="date"
+									render={({field}) => (
+										<FormItem>
+											<FormLabel>Date</FormLabel>
+											<br />
+											<Popover>
+												<PopoverTrigger asChild>
+													<FormControl>
+														<Button
+															variant={"outline"}
+															className={cn(
+																"w-full max-w-[240px] pl-3 text-left font-normal",
+																!field.value && "text-muted-foreground"
+															)}
+														>
+															{field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+															<CalendarIcon className="w-4 h-4 ml-auto opacity-50" />
+														</Button>
+													</FormControl>
+												</PopoverTrigger>
+												<PopoverContent
+													className="w-auto p-0 border rounded-lg shadow bg-card"
+													align="start"
+												>
+													<Calendar
+														mode="single"
+														selected={field.value}
+														onSelect={field.onChange}
+														disabled={(date) => {
+															const today = new Date();
+															today.setDate(today.getDate() - 1);
+															return date < today;
+														}}
+														initialFocus
+													/>
+												</PopoverContent>
+											</Popover>
+											{form.formState.errors.date && <FormMessage />}
+										</FormItem>
+									)}
+								/>
+								<div className="col-span-2 pt-2">
 									<FormField
 										control={form.control}
-										name="patient"
+										name="type"
 										render={({field}) => (
 											<FormItem>
-												<FormLabel>Patient</FormLabel>
-												<PatientSelector form={form} field={field} />
-												{form.formState.errors.patient && <FormMessage />}
-											</FormItem>
-										)}
-									/>
-									<FormField
-										control={form.control}
-										name="assigned_to"
-										render={({field}) => (
-											<FormItem>
-												<FormLabel>Assigned To</FormLabel>
-												<UserSelector form={form} field={field} />
-												{form.formState.errors.assigned_to && <FormMessage />}
-											</FormItem>
-										)}
-									/>
-									<FormField
-										control={form.control}
-										name="status"
-										render={() => (
-											<FormItem>
-												<FormLabel>Status</FormLabel>
-												<StatusBox form={form} />
-												{form.formState.errors.status && <FormMessage />}
-											</FormItem>
-										)}
-									/>
-								</div>
-								<div className="mb-4 space-y-4">
-									<FormField
-										control={form.control}
-										name="date"
-										render={({field}) => (
-											<FormItem>
-												<FormLabel>Date</FormLabel>
-												<br />
-												<Popover>
-													<PopoverTrigger asChild>
-														<FormControl>
-															<Button
-																variant={"outline"}
-																className={cn(
-																	"w-[240px] pl-3 text-left font-normal",
-																	!field.value && "text-muted-foreground"
-																)}
-															>
-																{field.value ? (
-																	format(field.value, "PPP")
-																) : (
-																	<span>Pick a date</span>
-																)}
-																<CalendarIcon className="w-4 h-4 ml-auto opacity-50" />
-															</Button>
-														</FormControl>
-													</PopoverTrigger>
-													<PopoverContent
-														className="w-auto p-0 border rounded-lg shadow bg-card"
-														align="start"
-													>
-														<Calendar
-															mode="single"
-															selected={field.value}
-															onSelect={field.onChange}
-															disabled={(date) => {
-																const today = new Date();
-																today.setDate(today.getDate() - 1);
-																return date < today;
-															}}
-															initialFocus
-														/>
-													</PopoverContent>
-												</Popover>
-												{form.formState.errors.date && <FormMessage />}
-											</FormItem>
-										)}
-									/>
-								</div>
-								<div className="grid items-start grid-cols-3 gap-8 mb-4">
-									<div className="col-span-2">
-										<FormField
-											control={form.control}
-											name="start_time"
-											render={({field}) => (
-												<FormItem>
-													<FormLabel>Start Time</FormLabel>
-													<RadioGroup
-														onValueChange={field.onChange}
-														defaultValue={field.value}
-														className="block"
-													>
-														{slots("08:00", "18:00").map((time, index) => (
-															<FormItem className="inline-block w-max" key={index}>
+												<FormLabel>Type</FormLabel>
+												<RadioGroup
+													onValueChange={field.onChange}
+													defaultValue={field.value}
+													className="flex items-center !mt-0"
+												>
+													<RadioGroupItem
+														value="in-person"
+														id="in-person"
+														className="sr-only peer"
+													/>
+													<RadioGroupItem value="video" id="video" className="sr-only peer" />
+													<RadioGroupItem value="phone" id="phone" className="sr-only peer" />
+													<div className="flex gap-2">
+														{[
+															{value: "in-person", label: "In-person"},
+															{value: "video", label: "Video"},
+															{value: "phone", label: "Phone"},
+														].map((type) => (
+															<FormItem key={type.value} className="inline-block w-max">
 																<FormControl>
-																	<RadioGroupItem value={time} id={time} className="sr-only peer" />
+																	<RadioGroupItem
+																		value={type.value}
+																		id={type.value}
+																		className="sr-only peer"
+																	/>
 																</FormControl>
 																<FormLabel
-																	htmlFor={time}
+																	htmlFor={type.value}
 																	className="flex cursor-pointer mr-2 flex-col items-center justify-between rounded-md border bg-popover px-4 py-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:outline-2 peer-data-[state=checked]:outline peer-data-[state=checked]:outline-primary [&:has([data-state=checked])]:outline-primary"
 																>
-																	{time}
+																	{type.label}
 																</FormLabel>
 															</FormItem>
 														))}
-													</RadioGroup>
-													{form.formState.errors.start_time && <FormMessage />}
-												</FormItem>
-											)}
-										/>
-									</div>
-									<div>
-										<FormField
-											control={form.control}
-											name="duration"
-											render={({field}) => (
-												<FormItem>
-													<FormLabel>Duration (in minutes)</FormLabel>
-													<FormControl>
-														<Input {...field} />
-													</FormControl>
-													{form.formState.errors.duration && <FormMessage />}
-												</FormItem>
-											)}
-										/>
-									</div>
+													</div>
+												</RadioGroup>
+												{form.formState.errors.type && <FormMessage />}
+											</FormItem>
+										)}
+									/>
+								</div>
+							</div>
+							<div className="grid items-start grid-cols-3 gap-8 mb-4">
+								<div className="col-span-2 pt-2">
+									<FormField
+										control={form.control}
+										name="start_time"
+										render={({field}) => (
+											<FormItem>
+												<FormLabel>Start Time</FormLabel>
+												<RadioGroup
+													onValueChange={field.onChange}
+													defaultValue={field.value}
+													className="block !mt-0"
+												>
+													{slots("08:00", "18:00").map((time, index) => (
+														<FormItem className="inline-block w-max" key={index}>
+															<FormControl>
+																<RadioGroupItem value={time} id={time} className="sr-only peer" />
+															</FormControl>
+															<FormLabel
+																htmlFor={time}
+																className="flex cursor-pointer mr-2 flex-col items-center justify-between rounded-md border bg-popover px-4 py-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:outline-2 peer-data-[state=checked]:outline peer-data-[state=checked]:outline-primary [&:has([data-state=checked])]:outline-primary"
+															>
+																{time}
+															</FormLabel>
+														</FormItem>
+													))}
+												</RadioGroup>
+												{form.formState.errors.start_time && <FormMessage />}
+											</FormItem>
+										)}
+									/>
 								</div>
 								<div>
 									<FormField
 										control={form.control}
-										name="reason"
+										name="duration"
 										render={({field}) => (
 											<FormItem>
-												<FormLabel>Reason</FormLabel>
+												<FormLabel>Duration (in minutes)</FormLabel>
 												<FormControl>
-													<Textarea
-														placeholder="Reason for the appointment"
-														className="max-w-lg resize-none"
-														{...field}
-													/>
+													<Input {...field} />
 												</FormControl>
-												{form.formState.errors.reason && <FormMessage />}
+												{form.formState.errors.duration && <FormMessage />}
 											</FormItem>
 										)}
 									/>
 								</div>
-								<DialogFooter>
-									<Button type="submit" disabled={mutation.isPending}>
-										{mutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-										Add Appointment
-									</Button>
-								</DialogFooter>
-							</form>
-						</Form>
-					</div>
+							</div>
+							<div>
+								<FormField
+									control={form.control}
+									name="reason"
+									render={({field}) => (
+										<FormItem>
+											<FormLabel>Reason</FormLabel>
+											<FormControl>
+												<Textarea
+													placeholder="Reason for the appointment"
+													className="max-w-lg resize-none"
+													{...field}
+												/>
+											</FormControl>
+											{form.formState.errors.reason && <FormMessage />}
+										</FormItem>
+									)}
+								/>
+							</div>
+							<DialogFooter>
+								<Button type="submit" disabled={mutation.isPending}>
+									{mutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+									Add Appointment
+								</Button>
+							</DialogFooter>
+						</form>
+					</Form>
 				</div>
 			</DialogContent>
 		</Dialog>
@@ -298,10 +337,10 @@ function PatientSelector({
 	});
 
 	const changeKeyword = debounce((value: string) => {
-		if (value.length > 2) {
+		if (value.length > 1) {
 			mutation.mutate(value);
 		}
-	}, 1000);
+	}, 500);
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
@@ -404,10 +443,10 @@ function UserSelector({
 	});
 
 	const changeKeyword = debounce((value: string) => {
-		if (value.length > 2) {
+		if (value.length > 1) {
 			mutation.mutate(value);
 		}
-	}, 1000);
+	}, 500);
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
@@ -488,82 +527,72 @@ function UserSelector({
 	);
 }
 
-type Status = {
-	value: string;
-	label: string;
-	icon: LucideIcon;
-};
+// type Status = {
+// 	value: string;
+// 	label: string;
+// 	icon: LucideIcon;
+// };
 
-const statuses: Status[] = [
-	{
-		value: "pending",
-		label: "Pending",
-		icon: CircleDotDashed,
-	},
-	{
-		value: "accepted",
-		label: "Accepted",
-		icon: CalendarCheck,
-	},
-	{
-		value: "completed",
-		label: "Completed",
-		icon: CircleCheckBig,
-	},
-];
+// const statuses: Status[] = [
+// 	{
+// 		value: "confirmed",
+// 		label: "Confirmed",
+// 		icon: CircleDotDashed,
+// 	},
+// ];
 
-function StatusBox({form}: {form: UseFormReturn<z.infer<typeof addAppointmentSchema>>}) {
-	const [open, setOpen] = React.useState(false);
-	const [selectedStatus, setSelectedStatus] = React.useState<Status | null>(null);
+// function StatusBox({form}: {form: UseFormReturn<z.infer<typeof addAppointmentSchema>>}) {
+// 	const [open, setOpen] = React.useState(false);
+// 	const [selectedStatus, setSelectedStatus] = React.useState<Status | null>(null);
 
-	return (
-		<div>
-			<Popover open={open} onOpenChange={setOpen}>
-				<PopoverTrigger asChild>
-					<FormControl>
-						<Button variant="outline" className="justify-start w-full">
-							{selectedStatus ? (
-								<>
-									<selectedStatus.icon className="w-4 h-4 mr-2 shrink-0" />
-									{selectedStatus.label}
-								</>
-							) : (
-								<>+ Set status</>
-							)}
-						</Button>
-					</FormControl>
-				</PopoverTrigger>
-				<PopoverContent className="p-0 mt-1 border rounded-md" side="bottom" align="start">
-					<Command>
-						<CommandList>
-							<CommandEmpty>No results found.</CommandEmpty>
-							<CommandGroup>
-								{statuses.map((status) => (
-									<CommandItem
-										key={status.value}
-										value={status.value}
-										onSelect={(value) => {
-											setSelectedStatus(
-												statuses.find((priority) => priority.value === value) || null
-											);
-											form.setValue("status", value);
-											setOpen(false);
-										}}
-									>
-										<status.icon
-											className={cn(
-												"mr-2 h-4 w-4",
-												status.value === selectedStatus?.value ? "opacity-100" : "opacity-40"
-											)}
-										/>
-										<span className="pr-16">{status.label}</span>
-									</CommandItem>
-								))}
-							</CommandGroup>
-						</CommandList>
-					</Command>
-				</PopoverContent>
-			</Popover>
-		</div>
-	);
-}
+// 	return (
+// 		<div>
+// 			<Popover open={open} onOpenChange={setOpen}>
+// 				<PopoverTrigger asChild>
+// 					<FormControl>
+// 						<Button variant="outline" className="justify-start w-full">
+// 							{selectedStatus ? (
+// 								<>
+// 									<selectedStatus.icon className="w-4 h-4 mr-2 shrink-0" />
+// 									{selectedStatus.label}
+// 								</>
+// 							) : (
+// 								<>+ Set status</>
+// 							)}
+// 						</Button>
+// 					</FormControl>
+// 				</PopoverTrigger>
+// 				<PopoverContent className="p-0 mt-1 border rounded-md" side="bottom" align="start">
+// 					<Command>
+// 						<CommandList>
+// 							<CommandEmpty>No results found.</CommandEmpty>
+// 							<CommandGroup>
+// 								{statuses.map((status) => (
+// 									<CommandItem
+// 										key={status.value}
+// 										value={status.value}
+// 										onSelect={(value) => {
+// 											setSelectedStatus(
+// 												statuses.find((priority) => priority.value === value) || null
+// 											);
+// 											form.setValue("status", value as "confirmed" | "completed");
+// 											setOpen(false);
+// 										}}
+// 									>
+// 										<status.icon
+// 											className={cn(
+// 												"mr-2 h-4 w-4",
+// 												status.value === selectedStatus?.value ? "opacity-100" : "opacity-40"
+// 											)}
+// 										/>
+// 										<span className="pr-16">{status.label}</span>
+// 									</CommandItem>
+// 								))}
+// 							</CommandGroup>
+// 						</CommandList>
+// 					</Command>
+// 				</PopoverContent>
+// 			</Popover>
+// 		</div>
+// 	);
+// }

@@ -10,7 +10,7 @@ import {PatientType} from "@/types/patient";
  */
 export function createPatientAPI(patient: PatientType) {
 	return axios
-		.post(API_URL + "/api/patient/new/", patient, {
+		.post(API_URL + "/api/patients/new/", patient, {
 			headers: {
 				"Content-Type": "application/json",
 			},

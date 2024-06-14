@@ -2,7 +2,6 @@ import {
 	Bell,
 	CalendarCheck,
 	ContactIcon,
-	HomeIcon,
 	Menu,
 	MessageCircleQuestionIcon,
 	MessagesSquareIcon,
@@ -16,14 +15,9 @@ import {Link} from "react-router-dom";
 import Logo from "@/assets/images/full-logo.svg";
 import SidebarItemMenu, {MenuItem as SidebarMenuItem} from "./SidebarItemMenu";
 import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet";
-import {READ_ALL_PATIENTS, READ_ALL_USERS} from "@/permissions/permissions";
+import {READ_ALL_PATIENTS, READ_ALL_USERS, VIEW_APPOINTMENTS} from "@/permissions/permissions";
 
 const adminMenu: SidebarMenuItem[] = [
-	{
-		title: "Admin Dash",
-		Icon: HomeIcon,
-		path: "/dashboard/admin/home",
-	},
 	{
 		title: "Users",
 		Icon: ContactIcon,
@@ -40,6 +34,7 @@ const adminMenu: SidebarMenuItem[] = [
 		title: "Appointments",
 		Icon: CalendarCheck,
 		path: "/dashboard/admin/appointments",
+		need_permission: VIEW_APPOINTMENTS,
 	},
 ];
 

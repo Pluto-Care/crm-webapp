@@ -1,4 +1,4 @@
-import {HasPermission} from "@/contexts/auth";
+import {HasPermission, useAnyPermission} from "@/contexts/auth";
 import {Badge, LucideProps} from "lucide-react";
 import {Link} from "react-router-dom";
 
@@ -21,9 +21,11 @@ export default function SidebarItemMenu({
 	items: MenuItem[];
 	isMobile?: boolean;
 }) {
+	const permission_ids = items.map((item) => item.need_permission).filter((id) => id !== undefined);
+	const hasAnyPermission = useAnyPermission(permission_ids as string[]);
 	return (
 		<>
-			{menuTitle && (
+			{(permission_ids.length > 0 ? hasAnyPermission : true) && menuTitle && (
 				<div className="px-3 mt-8 mb-3">
 					<span className={(isMobile ? "text-base" : "text-sm") + " uppercase text-zinc-400"}>
 						{menuTitle}

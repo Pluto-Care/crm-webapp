@@ -24,6 +24,7 @@ export const MODIFY_USER_PERMISSIONS = "update:user_permissions";
 export const MAKE_APPPOINTMENTS = "make:appointments";
 export const VIEW_APPOINTMENTS = "view:appointments";
 export const MODIFY_APPOINTMENTS = "modify:appointments";
+export const UPDATE_AVAILABILITY = "update:availability";
 
 // Catgeorized permissions
 
@@ -81,4 +82,5 @@ export const APPOINTMENT_PERMISSIONS: CustomPermissionType[] = [
 		description: "This is an Admin level permission to view all appointments in organization.",
 	},
 	{id: MODIFY_APPOINTMENTS, name: "Modify appointments"},
+	{id: UPDATE_AVAILABILITY, name: "Modify staff availabilities"},
 ];

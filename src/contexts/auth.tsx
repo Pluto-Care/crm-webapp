@@ -88,6 +88,19 @@ const HasPermission = (props: {
 	return permission ? <>{props.children}</> : <>{props.fallback}</>;
 };
 
+const useAnyPermission = (ids: string[]): boolean => {
+	const {user} = useAuth();
+	const user_permissions_ids = user?.permissions?.map((permission) => permission.id);
+	let hasPermission = ids.some((id) => user_permissions_ids?.includes(id));
+	if (!hasPermission) {
+		hasPermission = ids.some((id) => user?.role?.permissions?.includes(id));
+	}
+	if (!hasPermission) {
+		hasPermission = ids.some(() => user_permissions_ids?.includes(FULL_ACCESS));
+	}
+	return hasPermission;
+};
+
 function useSignIn() {
 	const {user, setUser} = useAuth();
 	const [loading, setLoading] = useState<boolean>(false);
@@ -240,4 +253,6 @@ export {
 	SignedIn,
 	SignedOut,
 	HasPermission,
+	usePermission,
+	useAnyPermission,
 };

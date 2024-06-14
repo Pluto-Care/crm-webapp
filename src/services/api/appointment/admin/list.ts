@@ -9,7 +9,7 @@ import {AppointmentType} from "@/types/appointment";
  */
 export function getOrgAppointmentListAPI() {
 	return axios
-		.get(API_URL + "/api/appointment/list/", {
+		.get(API_URL + "/api/scheduling/appointments/admin/list/", {
 			headers: {
 				"Content-Type": "application/json",
 			},

@@ -9,7 +9,7 @@ import {PatientType} from "@/types/patient";
  */
 export function getOrgPatientListAPI() {
 	return axios
-		.get(API_URL + "/api/patient/list/", {
+		.get(API_URL + "/api/patients/list/", {
 			headers: {
 				"Content-Type": "application/json",
 			},

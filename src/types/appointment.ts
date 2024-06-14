@@ -7,8 +7,10 @@ export type AppointmentType = {
 		phone: string;
 		email: string;
 	};
-	start_at: string;
-	end_at: string;
+	start_time: string;
+	end_time_expected: string;
+	end_time: string;
+	type: string;
 	reason: string;
 	status: string;
 	assigned_to: {
