@@ -35,6 +35,7 @@ import {LoadingScreen} from "@/components/utils/LoadingScreen";
 import {CREATE_USERS} from "@/permissions/permissions";
 import AddUserForm from "./AddUserForm";
 import SunRays from "@/components/utils/SunRays";
+import {datePretty, timePretty} from "@/lib/dateTimeUtils";
 
 export const columns: ColumnDef<OrgUser>[] = [
 	{
@@ -52,6 +53,7 @@ export const columns: ColumnDef<OrgUser>[] = [
 	{
 		accessorKey: "created_at",
 		header: "Created On",
+		accessorFn: (row) => datePretty(row.created_at) + " at " + timePretty(row.created_at),
 	},
 	{
 		id: "actions",

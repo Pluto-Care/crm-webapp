@@ -33,6 +33,7 @@ import {Helmet} from "react-helmet";
 import {APP_NAME} from "@/config";
 import {CREATE_PATIENTS} from "@/permissions/permissions";
 import SunRays from "@/components/utils/SunRays";
+import {formatPhoneNumber} from "../../../../lib/phoneNumberFormatter";
 
 export const columns: ColumnDef<PatientType>[] = [
 	{
@@ -50,6 +51,7 @@ export const columns: ColumnDef<PatientType>[] = [
 	{
 		accessorKey: "phone",
 		header: "Phone",
+		accessorFn: (row) => "+1 " + formatPhoneNumber(row.phone) ?? "N/A",
 	},
 	{
 		accessorKey: "city",
