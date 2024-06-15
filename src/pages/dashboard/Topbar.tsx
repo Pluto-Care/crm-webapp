@@ -20,7 +20,7 @@ export default function Topbar({organization}: {organization: OrgType | undefine
 	const {loading, signOut} = useSignOut();
 
 	return (
-		<header className="sticky top-0 z-10 bg-background md:bg-transparent flex h-14 items-center gap-4 border-b px-4 lg:h-[60px] lg:px-6">
+		<header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md flex h-14 items-center gap-4 border-b px-4 lg:h-[60px] lg:px-6">
 			<SidebarMobile />
 			<div className="flex-1 w-full">
 				<h4>Welcome, {auth_context.user?.detail.first_name}</h4>
