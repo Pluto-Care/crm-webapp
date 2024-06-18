@@ -33,6 +33,7 @@ const addPatientSchema = z.object({
 	email: z.string().email(),
 	first_name: z.string(),
 	last_name: z.string(),
+	sex: z.string(),
 	phone: z.coerce.number().gte(1000000000).lte(9999999999),
 	dob_day: z.coerce.number().gte(1).lte(31),
 	dob_month: z.coerce.number().gte(1).lte(12),
@@ -253,6 +254,35 @@ export default function AddPatientForm(props: {children: React.ReactNode}) {
 											/>
 										</div>
 									</div>
+									<FormField
+										control={form.control}
+										name="sex"
+										render={({field}) => (
+											<FormItem className="grid items-center w-full grid-cols-4 gap-4 space-y-0">
+												<FormLabel className="text-right">Sex</FormLabel>
+												<div className="flex items-center col-span-3 gap-2">
+													<Select onValueChange={field.onChange}>
+														<FormControl>
+															<SelectTrigger>
+																<SelectValue placeholder="Select biological sex" />
+															</SelectTrigger>
+														</FormControl>
+														<SelectContent>
+															{["male", "female", "other"].map((sex) => {
+																return (
+																	<SelectItem key={sex} value={sex}>
+																		{sex}
+																	</SelectItem>
+																);
+															})}
+														</SelectContent>
+													</Select>
+
+													<FormMessage />
+												</div>
+											</FormItem>
+										)}
+									/>
 								</div>
 								<DialogDescription className="px-4 py-2 mb-6 text-base font-medium bg-muted text-foreground">
 									Contact Information
@@ -265,8 +295,8 @@ export default function AddPatientForm(props: {children: React.ReactNode}) {
 											<FormItem className="grid items-center w-full grid-cols-4 gap-4 space-y-0">
 												<FormLabel className="text-right">Phone</FormLabel>
 												<div className="flex items-center col-span-3 gap-2">
-													<Label className="block h-full px-2 py-3 rounded min-w-[7.5rem] bg-muted border">
-														+1 (Canada/US)
+													<Label className="block h-full px-2 py-3 rounded min-w-[6rem] bg-muted border">
+														+1 (Canada)
 													</Label>
 													<FormControl>
 														<Input {...field} type="number" />
@@ -350,7 +380,7 @@ export default function AddPatientForm(props: {children: React.ReactNode}) {
 										)}
 									/>
 								</div>
-								<div className="grid grid-cols-2 gap-4 mt-4">
+								{/* <div className="grid grid-cols-2 gap-4 mt-4">
 									<FormField
 										control={form.control}
 										name="country"
@@ -384,7 +414,7 @@ export default function AddPatientForm(props: {children: React.ReactNode}) {
 											</FormItem>
 										)}
 									/>
-								</div>
+								</div> */}
 								<div className="grid grid-cols-2 gap-4 mt-4 mb-8">
 									<FormField
 										control={form.control}

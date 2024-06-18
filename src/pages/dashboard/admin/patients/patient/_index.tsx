@@ -16,6 +16,7 @@ import {Label} from "@radix-ui/react-dropdown-menu";
 import {useQuery} from "@tanstack/react-query";
 import {Helmet} from "react-helmet";
 import {Link, Navigate, useParams} from "react-router-dom";
+import PatientNotes from "./PatientNotes";
 
 export default function PatientDetailPage() {
 	const {patient_id} = useParams();
@@ -69,16 +70,27 @@ export default function PatientDetailPage() {
 						<div className="relative flex items-start gap-8">
 							<TabsList className="flex flex-col !h-auto min-w-56 sticky p-2 top-20">
 								<TabsTrigger value="view" className="justify-end w-full">
-									Patient Details
+									Data
 								</TabsTrigger>
 								<TabsTrigger value="edit" className="justify-end w-full">
-									Edit
+									Appointment History
 								</TabsTrigger>
 							</TabsList>
 							<div className="flex-1">
-								<div className="py-2">
+								<div>
 									<TabsContent value="view" className="!mt-0">
-										{patient_query.isSuccess && <PatientDetails patient={patient_query.data} />}
+										{patient_query.isSuccess && (
+											<div className="grid grid-cols-2 gap-8">
+												<div className="col-span-1">
+													<div className="px-5 py-4 rounded-md bg-muted/70">
+														<PatientDetails patient={patient_query.data} />
+													</div>
+												</div>
+												<div className="col-span-1">
+													<PatientNotes patient_id={patient_query.data.id} />
+												</div>
+											</div>
+										)}
 									</TabsContent>
 									<TabsContent value="edit">Change your password here.</TabsContent>
 								</div>
@@ -98,43 +110,46 @@ export default function PatientDetailPage() {
 
 function PatientDetails({patient}: {patient: PatientType}) {
 	return (
-		<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-			<div>
-				<Label>First Name</Label>
-				<div>{patient.first_name}</div>
+		<>
+			<h2 className="mb-4 text-xl">Details</h2>
+			<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+				<div>
+					<Label>First Name</Label>
+					<div>{patient.first_name}</div>
+				</div>
+				<div>
+					<Label>Last Name</Label>
+					<div>{patient.last_name}</div>
+				</div>
+				<div>
+					<Label>Email</Label>
+					<div>{patient.email}</div>
+				</div>
+				<div>
+					<Label>Phone</Label>
+					<div>{patient.phone}</div>
+				</div>
+				<div>
+					<Label>Address</Label>
+					<div>{patient.street}</div>
+				</div>
+				<div>
+					<Label>City</Label>
+					<div>{patient.city}</div>
+				</div>
+				<div>
+					<Label>State</Label>
+					<div>{patient.state}</div>
+				</div>
+				<div>
+					<Label>Zip</Label>
+					<div>{patient.postal_code}</div>
+				</div>
+				<div>
+					<Label>Country</Label>
+					<div>{patient.country}</div>
+				</div>
 			</div>
-			<div>
-				<Label>Last Name</Label>
-				<div>{patient.last_name}</div>
-			</div>
-			<div>
-				<Label>Email</Label>
-				<div>{patient.email}</div>
-			</div>
-			<div>
-				<Label>Phone</Label>
-				<div>{patient.phone}</div>
-			</div>
-			<div>
-				<Label>Address</Label>
-				<div>{patient.street}</div>
-			</div>
-			<div>
-				<Label>City</Label>
-				<div>{patient.city}</div>
-			</div>
-			<div>
-				<Label>State</Label>
-				<div>{patient.state}</div>
-			</div>
-			<div>
-				<Label>Zip</Label>
-				<div>{patient.postal_code}</div>
-			</div>
-			<div>
-				<Label>Country</Label>
-				<div>{patient.country}</div>
-			</div>
-		</div>
+		</>
 	);
 }

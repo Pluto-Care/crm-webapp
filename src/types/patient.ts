@@ -16,3 +16,13 @@ export type PatientType = {
 	updated_by: string;
 	created_by: string;
 };
+
+export type PatientNoteType = {
+	id: string;
+	note: string;
+	created_at: string;
+	created_by: string;
+	patient: string;
+	updated_at: string | null;
+	updated_by: string | null;
+};

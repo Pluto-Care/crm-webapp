@@ -17,13 +17,13 @@ export default function DashboardLayout(props: {children: React.ReactNode}) {
 			<Sidebar />
 			<div className="flex flex-col">
 				<Topbar organization={org_query.data} />
-				<main className="p-4 lg:p-6">
+				<main className="p-4 lg:p-6 max-w-[1600px]">
 					{/* Main section start */}
 					{props.children}
 					{/* Main section end */}
+					<Toaster />
 				</main>
 			</div>
-			<Toaster />
 		</div>
 	);
 }
