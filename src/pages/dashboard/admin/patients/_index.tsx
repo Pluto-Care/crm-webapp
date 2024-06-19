@@ -51,7 +51,7 @@ export const columns: ColumnDef<PatientType>[] = [
 	{
 		accessorKey: "phone",
 		header: "Phone",
-		accessorFn: (row) => "+1 " + formatPhoneNumber(row.phone) ?? "N/A",
+		accessorFn: (row) => "+1 " + formatPhoneNumber(row.phone),
 	},
 	{
 		accessorKey: "city",
