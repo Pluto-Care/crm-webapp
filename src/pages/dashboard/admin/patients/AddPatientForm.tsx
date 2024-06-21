@@ -268,7 +268,7 @@ export default function AddPatientForm(props: {children: React.ReactNode}) {
 															</SelectTrigger>
 														</FormControl>
 														<SelectContent>
-															{["male", "female", "other"].map((sex) => {
+															{["Male", "Female", "Other"].map((sex) => {
 																return (
 																	<SelectItem key={sex} value={sex}>
 																		{sex}
