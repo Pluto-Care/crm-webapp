@@ -112,7 +112,7 @@ export default function UserDetailPage() {
 				</>
 			) : user_query.isError ? (
 				<ErrorMessageAlert
-					title="Failed to load patient data"
+					title="Failed to load data"
 					message={`Try refreshing the page or go back to the previous page and try again. [${user_query.error}]`}
 				/>
 			) : null}

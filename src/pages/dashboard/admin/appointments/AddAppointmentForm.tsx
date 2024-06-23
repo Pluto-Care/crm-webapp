@@ -38,6 +38,10 @@ import {
 } from "@/components/ui/command";
 import {searchPatientAPI} from "@/services/api/patients/admin/search";
 import {searchOrgUserAPI} from "@/services/api/organization/admin/search_user";
+import {HasPermission, useAuth} from "@/contexts/auth";
+import AddPatientForm from "../patients/AddPatientForm";
+import {createMyAppointmentAPI} from "@/services/api/appointment/my/create";
+import {CREATE_PATIENTS} from "@/permissions/permissions";
 
 const addAppointmentSchema = z.object({
 	patient: z.string(),
@@ -50,21 +54,34 @@ const addAppointmentSchema = z.object({
 	status: z.enum(["rescheduled", "cancelled", "completed", "confirmed"]),
 });
 
-export default function AddAppointmentForm(props: {children: React.ReactNode}) {
+interface Props {
+	children: React.ReactNode;
+	self?: boolean;
+}
+
+export default function AddAppointmentForm(props: Props) {
+	const auth_context = useAuth();
 	const navigate = useNavigate();
 	const form = useForm<z.infer<typeof addAppointmentSchema>>({
 		resolver: zodResolver(addAppointmentSchema),
 		defaultValues: {
 			status: "confirmed",
+			assigned_to: props.self ? auth_context.user?.detail.id : undefined,
 		},
 	});
 
 	//mutation
 	const mutation = useMutation({
 		mutationKey: ["addPatient"],
-		mutationFn: (data: CreateAppointmentType) => createAppointmentAPI(data),
+		mutationFn: (data: CreateAppointmentType) =>
+			props.self ? createMyAppointmentAPI(data) : createAppointmentAPI(data),
 		onSuccess: (data) => {
-			navigate("/dashboard/admin/appointment/" + data.id);
+			// Redirect to the appointment page
+			if (props.self) {
+				navigate("/dashboard/my/appointments/" + data.id);
+				return;
+			}
+			navigate("/dashboard/admin/appointments/" + data.id);
 		},
 	});
 
@@ -97,6 +114,16 @@ export default function AddAppointmentForm(props: {children: React.ReactNode}) {
 											<FormLabel>Patient</FormLabel>
 											<PatientSelector form={form} field={field} />
 											{form.formState.errors.patient && <FormMessage />}
+											<HasPermission id={CREATE_PATIENTS} fallback={<></>}>
+												<div className="text-[90%] text-muted-foreground pl-1">
+													Can&apos;t find?{" "}
+													<AddPatientForm onClose="close">
+														<Button variant={"link"} className="px-0 !py-0 h-auto">
+															Add new patient
+														</Button>
+													</AddPatientForm>
+												</div>
+											</HasPermission>
 										</FormItem>
 									)}
 								/>
@@ -106,7 +133,14 @@ export default function AddAppointmentForm(props: {children: React.ReactNode}) {
 									render={({field}) => (
 										<FormItem>
 											<FormLabel>Assigned To</FormLabel>
-											<UserSelector form={form} field={field} />
+											{props.self ? (
+												<Input
+													disabled={true}
+													value={`${auth_context.user?.detail.first_name} ${auth_context.user?.detail.last_name}`}
+												/>
+											) : (
+												<UserSelector form={form} field={field} />
+											)}
 											{form.formState.errors.assigned_to && <FormMessage />}
 										</FormItem>
 									)}

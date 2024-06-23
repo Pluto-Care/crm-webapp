@@ -5,12 +5,15 @@
 import {API_URL as AUTH_BACKEND_URL} from "@/config";
 import {ErrorType, handleAxiosError} from "@/lib/handleAxiosError";
 import {FULL_ACCESS} from "@/permissions/permissions";
+import {getMyOrgAPI} from "@/services/api/organization/me";
 import {
 	AuthUserLastTokenSessionType,
 	AuthUserLastWebSessionType,
 	AuthUserRoleType,
 	AuthUserType,
 } from "@/types/auth";
+import {OrgType} from "@/types/org";
+import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import {
 	createContext,
@@ -34,6 +37,7 @@ type AuthValueType = {
 type AuthContextType = {
 	user: AuthValueType | null;
 	setUser: Dispatch<SetStateAction<AuthValueType | null>>;
+	org: OrgType | undefined;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -49,7 +53,14 @@ function useAuth(): AuthContextType {
 const AuthProvider = (props: {children: ReactNode}): ReactElement => {
 	const [user, setUser] = useState<AuthContextType["user"]>(null);
 
-	return <AuthContext.Provider {...props} value={{user, setUser}} />;
+	const org_query = useQuery({
+		queryKey: ["my_org"],
+		queryFn: () => getMyOrgAPI(),
+		refetchOnWindowFocus: false,
+		retry: 1,
+	});
+
+	return <AuthContext.Provider {...props} value={{user, setUser, org: org_query.data}} />;
 };
 
 const SignedIn = (props: {children: ReactNode}): ReactElement => {
@@ -207,9 +218,9 @@ function useRefresh() {
 
 	/**
 	 * If refresh fails, user is signed out
-	 * @returns {boolean}
+	 * @returns {AuthValueType | null}
 	 */
-	const refresh = useCallback(async () => {
+	const refresh = async () => {
 		setLoading(true);
 		setError(null);
 		await axios
@@ -239,7 +250,7 @@ function useRefresh() {
 				throw new Error(err);
 			});
 		return user;
-	}, [setUser, user]);
+	};
 
 	return {refresh, user, loading, error, isSuccess};
 }

@@ -12,29 +12,29 @@ import DashboardLayout from "@/pages/dashboard/_layout";
 import {useQuery} from "@tanstack/react-query";
 import {Helmet} from "react-helmet";
 import {Link, Navigate, useParams} from "react-router-dom";
-import {
-	SingleAppointmentType,
-	getSingleAppointmentAPI,
-} from "@/services/api/appointment/admin/get_single";
 import {datePretty, dateTimePretty, timePretty} from "@/lib/dateTimeUtils";
-import {formatPhoneNumber} from "../../../../../lib/phoneNumberFormatter";
-import {formatPureDatePretty} from "../../../../../lib/dateTimeUtils";
+import {formatPhoneNumber} from "@/lib/phoneNumberFormatter";
+import {formatPureDatePretty} from "@/lib/dateTimeUtils";
+import {
+	MySingleAppointmentType,
+	getMySingleAppointmentAPI,
+} from "@/services/api/appointment/my/get_single";
 
-export default function AppointmentDetailPage() {
+export default function MyAppointmentDetailPage() {
 	const {appointment_id} = useParams();
 
 	const apt_query = useQuery({
-		queryKey: ["apt_detail", appointment_id],
+		queryKey: ["my_apt_detail", appointment_id],
 		queryFn: () =>
 			appointment_id
-				? getSingleAppointmentAPI(appointment_id)
+				? getMySingleAppointmentAPI(appointment_id)
 				: Promise.reject("No appointment_id provided"),
 		refetchOnWindowFocus: false,
 		retry: false,
 	});
 
 	if (!appointment_id) {
-		return <Navigate to="/dashboard/admin/appointments" />;
+		return <Navigate to="/dashboard/my/appointments" />;
 	}
 
 	return (
@@ -51,10 +51,8 @@ export default function AppointmentDetailPage() {
 					</Helmet>
 					<Breadcrumb>
 						<BreadcrumbList>
-							<BreadcrumbItem>Admin Dashboard</BreadcrumbItem>
-							<BreadcrumbSeparator />
 							<BreadcrumbItem>
-								<Link to="/dashboard/admin/appointments">Appointments</Link>
+								<Link to="/dashboard/my/appointments">Appointments</Link>
 							</BreadcrumbItem>
 							<BreadcrumbSeparator />
 							<BreadcrumbPage>
@@ -84,7 +82,7 @@ export default function AppointmentDetailPage() {
 	);
 }
 
-function AppointmentDetails({apt}: {apt: SingleAppointmentType}) {
+function AppointmentDetails({apt}: {apt: MySingleAppointmentType}) {
 	return (
 		<div className="grid gap-8 xl:grid-cols-2">
 			<fieldset className="grid gap-6 p-4 border rounded-lg">

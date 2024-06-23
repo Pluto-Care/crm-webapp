@@ -21,6 +21,8 @@ import PatientDetailPage from "./pages/dashboard/admin/patients/patient/_index";
 import {LoadingScreen} from "./components/utils/LoadingScreen";
 import {READ_ALL_PATIENTS, READ_ALL_USERS, VIEW_APPOINTMENTS} from "./permissions/permissions";
 import AppointmentsDashboard from "./pages/dashboard/my/appointments/_index";
+import MyAppointmentDetailPage from "./pages/dashboard/my/appointments/appointment/_index";
+import MyPatientsDashboard from "./pages/dashboard/my/patients/_index";
 
 const Dashboard = React.lazy(() => import("@/pages/dashboard/_index"));
 const LoginPage = React.lazy(() => import("@/pages/login/_index"));
@@ -29,6 +31,9 @@ const AdminUsersDashboard = React.lazy(() => import("@/pages/dashboard/admin/use
 const UserDetailPage = React.lazy(() => import("@/pages/dashboard/admin/users/user/_index"));
 const AdminAppointmentsDashboard = React.lazy(
 	() => import("@/pages/dashboard/admin/appointments/_index")
+);
+const AppointmentDetailPage = React.lazy(
+	() => import("@/pages/dashboard/admin/appointments/appointment/_index")
 );
 
 export default function App() {
@@ -160,10 +165,44 @@ export default function App() {
 						}
 					/>
 					<Route
+						path={"/dashboard/admin/appointments/:appointment_id"}
+						element={
+							<SW>
+								<HasPermission
+									id={VIEW_APPOINTMENTS}
+									fallback={
+										<ErrorPageFallback
+											title="Permission Denied"
+											message="You do not have permission to view this page."
+										/>
+									}
+								>
+									<AppointmentDetailPage />
+								</HasPermission>
+							</SW>
+						}
+					/>
+					<Route
 						path={"/dashboard/my/appointments"}
 						element={
 							<SW>
 								<AppointmentsDashboard />
+							</SW>
+						}
+					/>
+					<Route
+						path={"/dashboard/my/appointments/:appointment_id"}
+						element={
+							<SW>
+								<MyAppointmentDetailPage />
+							</SW>
+						}
+					/>
+					<Route
+						path={"/dashboard/my/patients"}
+						element={
+							<SW>
+								<MyPatientsDashboard />
 							</SW>
 						}
 					/>

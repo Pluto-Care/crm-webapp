@@ -3,6 +3,7 @@ export type PatientType = {
 	first_name: string;
 	last_name: string;
 	dob: string;
+	sex: string;
 	email: string;
 	phone: string;
 	street: string;

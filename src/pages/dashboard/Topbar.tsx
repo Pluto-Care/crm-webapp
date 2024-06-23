@@ -12,9 +12,8 @@ import {useAuth, useSignOut} from "@/contexts/auth";
 import {useTheme} from "@/components/theme-provider";
 import {Skeleton} from "@/components/ui/skeleton";
 import {SidebarMobile} from "./Sidebar";
-import {OrgType} from "@/types/org";
 
-export default function Topbar({organization}: {organization: OrgType | undefined}) {
+export default function Topbar() {
 	const {theme, setTheme} = useTheme();
 	const auth_context = useAuth();
 	const {loading, signOut} = useSignOut();
@@ -42,13 +41,13 @@ export default function Topbar({organization}: {organization: OrgType | undefine
 					</Button>
 				</div>
 				<div className="flex items-center">
-					{organization ? (
+					{auth_context.org ? (
 						<div className="flex items-center gap-2 px-2.5 py-1 min-w-40 text-sm border rounded-lg">
 							<Hospital strokeWidth={1.75} absoluteStrokeWidth className="size-5" />
 							<div>
-								<div className="font-medium leading-4">{organization.name}</div>
+								<div className="font-medium leading-4">{auth_context.org.name}</div>
 								<div className="leading-4 text-muted-foreground">
-									{organization.city}, {organization.state}
+									{auth_context.org.city}, {auth_context.org.state}
 								</div>
 							</div>
 						</div>

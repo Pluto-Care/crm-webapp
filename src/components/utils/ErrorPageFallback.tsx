@@ -1,8 +1,21 @@
 import {AlertCircle} from "lucide-react";
 import {Alert, AlertDescription, AlertTitle} from "../ui/alert";
+import {Link} from "react-router-dom";
 
-export default function ErrorPageFallback({title, message}: {title: string; message: string}) {
+export default function ErrorPageFallback({
+	title,
+	message,
+	offer_page,
+}: {
+	title: string;
+	message: string;
+	offer_page?: {name: string; to: string};
+}) {
 	const location = window.location;
+
+	if (!offer_page) {
+		offer_page = {name: "Go to home", to: "/"};
+	}
 
 	return (
 		<div className="flex items-center justify-center min-h-screen">
@@ -17,6 +30,13 @@ export default function ErrorPageFallback({title, message}: {title: string; mess
 						<p className="!mt-2">
 							<span className="text-sm text-muted-foreground">URL: {location.href}</span>
 						</p>
+						{offer_page && (
+							<p className="!mt-2">
+								<Link to={offer_page.to} className="text-primary text-sm text-[90%]">
+									{offer_page.name}
+								</Link>
+							</p>
+						)}
 					</AlertDescription>
 				</Alert>
 			</div>

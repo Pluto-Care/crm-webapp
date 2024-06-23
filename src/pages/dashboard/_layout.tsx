@@ -1,22 +1,17 @@
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
-import {useQuery} from "@tanstack/react-query";
-import {getMyOrgAPI} from "@/services/api/organization/me";
 import {Toaster} from "@/components/ui/sonner";
 
-export default function DashboardLayout(props: {children: React.ReactNode}) {
-	const org_query = useQuery({
-		queryKey: ["my_org"],
-		queryFn: () => getMyOrgAPI(),
-		refetchOnWindowFocus: false,
-		retry: 1,
-	});
+interface Props {
+	children: React.ReactNode;
+}
 
+export default function DashboardLayout(props: Props) {
 	return (
 		<div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] relative">
 			<Sidebar />
 			<div className="flex flex-col">
-				<Topbar organization={org_query.data} />
+				<Topbar />
 				<main className="p-4 lg:p-6 max-w-[1600px]">
 					{/* Main section start */}
 					{props.children}

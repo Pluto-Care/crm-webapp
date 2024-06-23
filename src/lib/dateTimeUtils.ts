@@ -142,3 +142,16 @@ export function monthPretty(month: number) {
 	];
 	return monthNames[month];
 }
+
+/**
+ * Date format: YYYY-MM-DD
+ */
+export function formatPureDatePretty(date: string) {
+	return (
+		monthPretty(parseInt(date.split("-")[1])) +
+		" " +
+		parseInt(date.split("-")[2]) +
+		", " +
+		date.split("-")[0]
+	);
+}

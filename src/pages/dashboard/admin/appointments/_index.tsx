@@ -217,7 +217,7 @@ function DataTable<TData, TValue>({columns, data}: DataTableProps<TData, TValue>
 												<div className="block w-full h-full p-4">
 													<Link
 														className=" hover:underline hover:underline-offset-2"
-														to={`/dashboard/admin/users/${
+														to={`/dashboard/admin/appointments/${
 															(data as AppointmentType[])[row_index]["id"]
 														}`}
 													>

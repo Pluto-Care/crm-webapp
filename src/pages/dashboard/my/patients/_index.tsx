@@ -17,23 +17,18 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 import {useQuery} from "@tanstack/react-query";
-import {getOrgPatientListAPI} from "@/services/api/patients/admin/list";
 import {useState} from "react";
 import {Skeleton} from "@/components/ui/skeleton";
-import AddPatientForm from "./AddPatientForm";
-import {HasPermission} from "@/contexts/auth";
 import {Link} from "react-router-dom";
 import {Helmet} from "react-helmet";
 import {APP_NAME} from "@/config";
-import {CREATE_PATIENTS} from "@/permissions/permissions";
 import SunRays from "@/components/utils/SunRays";
-import {formatPhoneNumber} from "../../../../lib/phoneNumberFormatter";
+import {formatPhoneNumber} from "@/lib/phoneNumberFormatter";
+import {getMyPatientListAPI} from "@/services/api/patients/my/list";
 
 export const columns: ColumnDef<PatientType>[] = [
 	{
@@ -59,7 +54,7 @@ export const columns: ColumnDef<PatientType>[] = [
 	},
 	{
 		id: "actions",
-		cell: ({row}) => {
+		cell: (/*{row}*/) => {
 			return (
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
@@ -72,16 +67,6 @@ export const columns: ColumnDef<PatientType>[] = [
 						<DropdownMenuItem>View details</DropdownMenuItem>
 						<DropdownMenuItem>Files</DropdownMenuItem>
 						<DropdownMenuItem>Calling History</DropdownMenuItem>
-						<DropdownMenuSeparator />
-						<DropdownMenuLabel>Actions</DropdownMenuLabel>
-						<DropdownMenuItem
-							onClick={() => {
-								console.log(row);
-							}}
-						>
-							Edit Profile
-						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => {}}>Delete</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 			);
@@ -94,10 +79,10 @@ interface DataTableProps<TData, TValue> {
 	data: TData[];
 }
 
-export default function AdminPatientsDashboard() {
+export default function MyPatientsDashboard() {
 	const patient_list_query = useQuery({
-		queryKey: ["org_patient_list"],
-		queryFn: () => getOrgPatientListAPI(),
+		queryKey: ["my_patient_list"],
+		queryFn: () => getMyPatientListAPI(),
 		refetchOnWindowFocus: false,
 	});
 
@@ -109,7 +94,7 @@ export default function AdminPatientsDashboard() {
 			<SunRays color="red" />
 			<div className="flex mb-5">
 				<div className="flex-1">
-					<h1 className="text-xl font-semibold md:text-2xl">Patient List</h1>
+					<h1 className="text-xl font-semibold md:text-2xl">Your Patient List</h1>
 					{patient_list_query.isLoading ? (
 						<Skeleton className="w-48 h-6" />
 					) : (
@@ -118,13 +103,7 @@ export default function AdminPatientsDashboard() {
 						</p>
 					)}
 				</div>
-				<div>
-					<HasPermission id={CREATE_PATIENTS} fallback={<></>}>
-						<AddPatientForm onClose="patient_page">
-							<Button variant={"default"}>Add New Patient</Button>
-						</AddPatientForm>
-					</HasPermission>
-				</div>
+				<div></div>
 			</div>
 			<DataTable
 				columns={columns}
@@ -196,9 +175,7 @@ function DataTable<TData, TValue>({columns, data}: DataTableProps<TData, TValue>
 										<TableCell key={cell.id}>
 											{index === 0 ? (
 												<Link
-													to={`/dashboard/admin/patients/${
-														(data as PatientType[])[row_index]["id"]
-													}`}
+													to={`/dashboard/my/patients/${(data as PatientType[])[row_index]["id"]}`}
 												>
 													{flexRender(cell.column.columnDef.cell, cell.getContext())}
 												</Link>

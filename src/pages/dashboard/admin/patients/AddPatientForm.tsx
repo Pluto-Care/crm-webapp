@@ -45,7 +45,12 @@ const addPatientSchema = z.object({
 	postal_code: z.string(),
 });
 
-export default function AddPatientForm(props: {children: React.ReactNode}) {
+interface Props {
+	children: React.ReactNode;
+	onClose: "close" | "patient_page";
+}
+
+export default function AddPatientForm(props: Props) {
 	const navigate = useNavigate();
 	const form = useForm<z.infer<typeof addPatientSchema>>({
 		resolver: zodResolver(addPatientSchema),
@@ -61,7 +66,9 @@ export default function AddPatientForm(props: {children: React.ReactNode}) {
 		mutationKey: ["addPatient"],
 		mutationFn: (data: unknown) => createPatientAPI(data as PatientType),
 		onSuccess: (data) => {
-			navigate("/dashboard/admin/patients/" + data.data.id);
+			if (props.onClose === "patient_page") {
+				navigate("/dashboard/admin/patients/" + data.data.id);
+			}
 		},
 	});
 
@@ -78,21 +85,23 @@ export default function AddPatientForm(props: {children: React.ReactNode}) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>{props.children}</DialogTrigger>
-			<DialogContent className="w-full h-full min-w-full">
-				<div className="container relative mx-auto overflow-y-scroll">
-					<DialogHeader>
-						<DialogTitle className="text-2xl">Add New Patient</DialogTitle>
-						<DialogDescription>Fill in the details below to add a new patient.</DialogDescription>
-					</DialogHeader>
-					<div className="max-w-5xl py-8 mx-auto mt-8">
+			<DialogContent className="min-w-[70rem]">
+				<DialogHeader>
+					<DialogTitle className="text-2xl">Add New Patient</DialogTitle>
+					<DialogDescription>Fill in the details below to add a new patient.</DialogDescription>
+				</DialogHeader>
+				{mutation.isSuccess ? (
+					<>Patient has been added successfully, you may close this window now.</>
+				) : (
+					<>
 						{mutation.isError && (
-							<div className="p-4 mb-4 text-red-600 bg-red-100 border border-red-300 rounded">
+							<div className="p-4 text-red-600 bg-red-100 border border-red-300 rounded">
 								{mutation.error.message}
 							</div>
 						)}
 						<Form {...form}>
 							<form onSubmit={form.handleSubmit(onSubmit)}>
-								<DialogDescription className="px-4 py-2 mb-6 text-base font-medium bg-muted text-foreground">
+								<DialogDescription className="py-1 mt-6 mb-4 text-base font-medium border-b text-foreground">
 									Patient Information
 								</DialogDescription>
 								<div className="grid grid-cols-2 gap-4 mb-12">
@@ -284,7 +293,7 @@ export default function AddPatientForm(props: {children: React.ReactNode}) {
 										)}
 									/>
 								</div>
-								<DialogDescription className="px-4 py-2 mb-6 text-base font-medium bg-muted text-foreground">
+								<DialogDescription className="py-1 mb-6 text-base font-medium border-b text-foreground">
 									Contact Information
 								</DialogDescription>
 								<div className="grid grid-cols-2 gap-4 mb-12">
@@ -335,7 +344,7 @@ export default function AddPatientForm(props: {children: React.ReactNode}) {
 										)}
 									/>
 								</div>
-								<DialogDescription className="px-4 py-2 mb-6 text-base font-medium bg-muted text-foreground">
+								<DialogDescription className="py-1 mb-6 text-base font-medium border-b text-foreground">
 									Address Information
 								</DialogDescription>
 								<div className="grid grid-cols-2 gap-4">
@@ -484,8 +493,8 @@ export default function AddPatientForm(props: {children: React.ReactNode}) {
 								</DialogFooter>
 							</form>
 						</Form>
-					</div>
-				</div>
+					</>
+				)}
 			</DialogContent>
 		</Dialog>
 	);
@@ -562,4 +571,4 @@ const STATES = {
 	],
 };
 
-const COUNTRY_LIST = ["Canada", "United States"];
+// const COUNTRY_LIST = ["Canada", "United States"];

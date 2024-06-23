@@ -35,6 +35,7 @@ import {formatPhoneNumber} from "@/lib/phoneNumberFormatter";
 import {Badge} from "@/components/ui/badge";
 import {getMyAppointmentListAPI} from "@/services/api/appointment/my/list";
 import SunRays from "@/components/utils/SunRays";
+import AddAppointmentForm from "../../admin/appointments/AddAppointmentForm";
 
 export const columns: ColumnDef<AppointmentType>[] = [
 	{
@@ -131,7 +132,12 @@ export default function AppointmentsDashboard() {
 						</p>
 					)}
 				</div>
-				<div></div>
+
+				<div>
+					<AddAppointmentForm self={true}>
+						<Button variant={"default"}>Create New Appoitment</Button>
+					</AddAppointmentForm>
+				</div>
 			</div>
 			{apt_list_query.isSuccess ? (
 				<DataTable columns={columns} data={apt_list_query.data} />
@@ -208,7 +214,7 @@ function DataTable<TData, TValue>({columns, data}: DataTableProps<TData, TValue>
 												<div className="block w-full h-full p-4">
 													<Link
 														className=" hover:underline hover:underline-offset-2"
-														to={`/dashboard/admin/users/${
+														to={`/dashboard/my/appointments/${
 															(data as AppointmentType[])[row_index]["id"]
 														}`}
 													>
