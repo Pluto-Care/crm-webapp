@@ -19,6 +19,7 @@ import {Link, Navigate, useParams} from "react-router-dom";
 import {PermissionsTab} from "./PermissionsTab";
 import {HasPermission} from "@/contexts/auth";
 import {MODIFY_USER_PERMISSIONS} from "@/permissions/permissions";
+import AddAvailabilityForm from "./availability/AddAvailability";
 
 export default function UserDetailPage() {
 	const {user_id} = useParams();
@@ -78,6 +79,9 @@ export default function UserDetailPage() {
 								<TabsTrigger value="permissions" className="justify-start w-full">
 									Permissions
 								</TabsTrigger>
+								<TabsTrigger value="availability" className="justify-start w-full">
+									Availability
+								</TabsTrigger>
 							</TabsList>
 							<div className="flex-1">
 								<div>
@@ -104,6 +108,9 @@ export default function UserDetailPage() {
 												<></>
 											)}
 										</HasPermission>
+									</TabsContent>
+									<TabsContent value="availability" className="!mt-0">
+										<AddAvailabilityForm user={user_query.data.user} />
 									</TabsContent>
 								</div>
 							</div>
