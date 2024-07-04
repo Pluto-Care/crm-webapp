@@ -7,6 +7,7 @@ import {
 	LOGS_PERMISSIONS,
 	ORGANIZATION_PERMISSIONS,
 	PATIENT_PERMISSIONS,
+	SCHEDULING_PERMISSIONS,
 	USER_PERMISSIONS,
 } from "@/permissions/permissions";
 import {modifyUserPermissionsAPI} from "@/services/api/organization/admin/modify_user_permissions";
@@ -69,7 +70,7 @@ export function PermissionsTab(props: IPermissionsTabProps) {
 					disabled={mutation.isPending}
 					className="grid gap-6 p-4 border border-red-300 rounded-lg dark:border-red-400/50"
 				>
-					<legend className="px-1 -ml-1 text-sm font-medium">Admin Portal</legend>
+					<legend className="px-1 -ml-1 text-sm font-medium">Administrator</legend>
 					<div className="grid gap-3">
 						{[
 							{
@@ -115,6 +116,13 @@ export function PermissionsTab(props: IPermissionsTabProps) {
 						permissions={APPOINTMENT_PERMISSIONS}
 						user_perms={props.permissions}
 					/>
+					<PermissionSection
+						form={form}
+						title="Scheduling"
+						permissions={SCHEDULING_PERMISSIONS}
+						user_perms={props.permissions}
+						description="User always have access to change their own availability. These permissions are for admins to view and modify other staff's availability."
+					/>
 					<Button disabled={mutation.isPending}>
 						{mutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
 						Save Permissions
@@ -129,15 +137,18 @@ function PermissionSection({
 	form,
 	title,
 	permissions,
+	description,
 }: {
 	form: ReturnType<typeof useForm>;
 	title: string;
 	permissions: CustomPermissionType[];
 	user_perms: UserPermissions | undefined | null;
+	description?: string;
 }) {
 	return (
 		<fieldset className="grid gap-6 p-4 border rounded-lg">
 			<legend className="px-1 -ml-1 text-sm font-medium">{title}</legend>
+			{description && <p className="text-sm !mt-0 text-muted-foreground">{description}</p>}
 			<div className="grid gap-3 xl:grid-cols-3">
 				{permissions.map((permission) => {
 					return <PermissionFormField key={permission.id} form={form} permission={permission} />;
@@ -163,7 +174,7 @@ function PermissionFormField({
 					<Checkbox checked={field.value} onCheckedChange={field.onChange} id={permission.id} />
 				)}
 			/>
-			<div className="grid gap-1.5 leading-none">
+			<div className="flex flex-col gap-2 leading-none">
 				<label
 					htmlFor={permission.id}
 					className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"

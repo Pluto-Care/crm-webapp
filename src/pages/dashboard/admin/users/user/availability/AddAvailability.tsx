@@ -20,7 +20,9 @@ import {cn} from "@/lib/utils";
 import MultipleSelector, {Option} from "@/components/ui/multiselect";
 import {TimePicker12Demo} from "@/components/TimePicker12";
 import {UserType} from "@/types/user";
-import {Input} from "@/components/ui/input";
+import spacetime from "spacetime";
+import {addAvailabilityAPI} from "@/services/api/availability/admin/add_by_admin";
+import {toast} from "sonner";
 
 const addAvailabilitySchema = z.object({
 	start_time: z.date(),
@@ -56,37 +58,51 @@ export default function AddAvailabilityForm({user}: {user: UserType}) {
 	//mutation
 	const mutation = useMutation({
 		mutationKey: ["add_availability"],
-		mutationFn: (data: z.infer<typeof addAvailabilitySchema>) => {
-			return Promise.resolve(data);
-		},
-		onSuccess: (data) => {
-			console.log(data);
+		mutationFn: (data: unknown) => addAvailabilityAPI(data),
+		onSuccess: () => {
+			toast.success("Availability added successfully.", {position: "top-right"});
+			form.reset();
 		},
 	});
 
 	const onSubmit = (data: z.infer<typeof addAvailabilitySchema>) => {
-		console.log(data);
-		mutation.mutate(data);
+		// change date from timestamp to YYYY-MM-DD
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const d: any = {...data};
+		d.start_date = format(data.start_date, "yyyy-MM-dd");
+		d.end_date = data.end_date ? format(data.end_date, "yyyy-MM-dd") : null;
+		mutation.mutate(d);
 	};
 
 	return (
-		<div className="px-6 py-8 border rounded-xl">
+		<div className="px-6 py-6 border rounded-xl">
 			<h3>Add Availability</h3>
+			<p className="text-sm text-muted-foreground">
+				The availability will be set according to timezone set for this user which is{" "}
+				<b>{user.timezone}</b> ({spacetime(user.timezone).timezone().current.offset}).
+			</p>
 			{mutation.isError && (
-				<div className="p-4 mb-4 text-red-600 bg-red-100 border border-red-300 rounded">
+				<div className="px-4 py-2 my-4 text-sm text-red-600 bg-red-100 border border-red-300 rounded dark:bg-red-400/10 dark:text-red-400">
 					{mutation.error.message}
+				</div>
+			)}
+			{mutation.isSuccess && (
+				<div className="px-4 py-2 my-4 text-sm text-green-700 bg-green-100 border border-green-300 rounded dark:bg-green-400/10 dark:text-green-400">
+					Availability added successfully.
 				</div>
 			)}
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)}>
-					<div className="mt-6 mb-12 space-y-12">
-						<div className="grid grid-cols-2 gap-4">
+					<div className="mt-6 mb-6 space-y-6">
+						<div className="grid grid-cols-3 gap-4">
 							<FormField
 								control={form.control}
 								name="start_date"
 								render={({field}) => (
 									<FormItem>
-										<FormLabel>Start Date</FormLabel>
+										<FormLabel>
+											Start Date <span className="text-base text-red-500">*</span>
+										</FormLabel>
 										<br />
 										<Popover>
 											<PopoverTrigger asChild>
@@ -164,7 +180,7 @@ export default function AddAvailabilityForm({user}: {user: UserType}) {
 												/>
 											</PopoverContent>
 										</Popover>
-										<FormDescription>
+										<FormDescription className="max-w-80">
 											Availability until and including this day. Leave this empty to set an
 											indefinite end date.
 										</FormDescription>
@@ -172,44 +188,11 @@ export default function AddAvailabilityForm({user}: {user: UserType}) {
 									</FormItem>
 								)}
 							/>
-						</div>
-
-						<div className="grid grid-cols-2 gap-4">
-							<FormField
-								control={form.control}
-								name="start_time"
-								render={({field}) => (
-									<FormItem>
-										<FormLabel>Start time</FormLabel>
-										<FormControl>
-											<TimePicker12Demo date={field.value} setDate={field.onChange} />
-										</FormControl>
-										<FormDescription>Availability starts at time</FormDescription>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-							<FormField
-								control={form.control}
-								name="end_time"
-								render={({field}) => (
-									<FormItem>
-										<FormLabel>End time</FormLabel>
-										<FormControl>
-											<TimePicker12Demo date={field.value} setDate={field.onChange} />
-										</FormControl>
-										<FormDescription>Availability ends at time</FormDescription>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-						</div>
-						<div className="grid grid-cols-2 gap-4">
 							<FormField
 								control={form.control}
 								name="days"
 								render={({field}) => (
-									<FormItem>
+									<FormItem className="mt-2">
 										<FormLabel>Week days</FormLabel>
 										<FormControl>
 											<MultipleSelector
@@ -245,18 +228,38 @@ export default function AddAvailabilityForm({user}: {user: UserType}) {
 									</FormItem>
 								)}
 							/>
+						</div>
+
+						<div className="grid grid-cols-3 gap-4">
 							<FormField
 								control={form.control}
-								name="user"
-								render={() => (
+								name="start_time"
+								render={({field}) => (
 									<FormItem>
-										<FormLabel>User</FormLabel>
-										<Input
-											disabled={true}
-											value={`${user?.first_name} ${user?.last_name}`}
-											className="max-w-72"
-										/>
-										{form.formState.errors.user && <FormMessage />}
+										<FormLabel>
+											Start time <span className="text-base text-red-500">*</span>
+										</FormLabel>
+										<FormControl>
+											<TimePicker12Demo date={field.value} setDate={field.onChange} />
+										</FormControl>
+										<FormDescription>Availability starts at time</FormDescription>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="end_time"
+								render={({field}) => (
+									<FormItem>
+										<FormLabel>
+											End time <span className="text-base text-red-500">*</span>
+										</FormLabel>
+										<FormControl>
+											<TimePicker12Demo date={field.value} setDate={field.onChange} />
+										</FormControl>
+										<FormDescription>Availability ends at time</FormDescription>
+										<FormMessage />
 									</FormItem>
 								)}
 							/>

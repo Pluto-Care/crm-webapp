@@ -5,6 +5,17 @@ export const CREATE_PATIENTS = "create:patients";
 export const UPDATE_PATIENTS = "update:patients";
 export const DELETE_PATIENTS = "delete:patients";
 
+// SCHEDULING
+
+export const MODIFY_ALL_APPOINTMENTS = "modify:appointments";
+export const VIEW_ALL_APPOINTMENTS = "view:appointments";
+export const MODIFY_ALL_AVAILABILITIES = "modify:all_availabilities";
+export const VIEW_ALL_AVAILABILITIES = "view:all_availabilities";
+export const MODIFY_ALL_BREAKS = "modify:all_breaks";
+export const VIEW_ALL_BREAKS = "view:all_breaks";
+export const MODIFY_ALL_LEAVES = "modify:all_leaves";
+export const VIEW_ALL_LEAVES = "view:all_leaves";
+
 // BASE
 
 export const FULL_ACCESS = "full_access";
@@ -21,10 +32,6 @@ export const READ_ALL_LOGS = "read:all_logs";
 export const READ_ALL_USERS = "read:all_users";
 export const MODIFY_USER_ROLE = "update:user_role";
 export const MODIFY_USER_PERMISSIONS = "update:user_permissions";
-export const MAKE_APPPOINTMENTS = "make:appointments";
-export const VIEW_APPOINTMENTS = "view:appointments";
-export const MODIFY_APPOINTMENTS = "modify:appointments";
-export const UPDATE_AVAILABILITY = "update:availability";
 
 // Catgeorized permissions
 
@@ -56,7 +63,11 @@ export const USER_PERMISSIONS: CustomPermissionType[] = [
 	{id: DELETE_USER, name: "Delete user"},
 	{id: DELETE_USER_MFA, name: "Delete user MFA"},
 	{id: UPDATE_USER_MFA, name: "Update user MFA"},
-	{id: UPDATE_USER_PASSWORD, name: "Update user password"},
+	{
+		id: UPDATE_USER_PASSWORD,
+		name: "Update user password",
+		description: "User always have access to change their own password.",
+	},
 	{id: DISABLE_USER, name: "Disable user"},
 	{id: ENABLE_USER, name: "Enable user"},
 	{id: MODIFY_USER_ROLE, name: "Update user role"},
@@ -73,14 +84,37 @@ export const LOGS_PERMISSIONS: CustomPermissionType[] = [
 
 export const APPOINTMENT_PERMISSIONS: CustomPermissionType[] = [
 	{
-		id: MAKE_APPPOINTMENTS,
-		name: "Make appointments",
+		id: MODIFY_ALL_APPOINTMENTS,
+		name: "Make or Modify appointments",
+		description:
+			"User can always make an appointment for themselves. This permission is for Admins to make appointments for anyone.",
 	},
 	{
-		id: VIEW_APPOINTMENTS,
+		id: VIEW_ALL_APPOINTMENTS,
 		name: "Read all appointments",
-		description: "This is an Admin level permission to view all appointments in organization.",
+		description:
+			"User can always view their own appointments. This permission is for Admins to view all appointments.",
 	},
-	{id: MODIFY_APPOINTMENTS, name: "Modify appointments"},
-	{id: UPDATE_AVAILABILITY, name: "Modify staff availabilities"},
+];
+
+export const SCHEDULING_PERMISSIONS: CustomPermissionType[] = [
+	{
+		id: MODIFY_ALL_AVAILABILITIES,
+		name: "Modify all availabilities",
+	},
+	{
+		id: VIEW_ALL_AVAILABILITIES,
+		name: "View all availabilities",
+	},
+	{
+		id: MODIFY_ALL_BREAKS,
+		name: "Modify all breaks",
+	},
+	{id: VIEW_ALL_BREAKS, name: "View all breaks"},
+	{
+		id: MODIFY_ALL_LEAVES,
+		name: "Modify all leaves",
+		description: "This is an Admin level permission",
+	},
+	{id: VIEW_ALL_LEAVES, name: "View all leaves"},
 ];

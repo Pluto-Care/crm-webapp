@@ -14,11 +14,11 @@ import {Link} from "react-router-dom";
 import Logo from "@/assets/images/full-logo.svg";
 import SidebarItemMenu, {MenuItem as SidebarMenuItem} from "./SidebarItemMenu";
 import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet";
-import {READ_ALL_PATIENTS, READ_ALL_USERS, VIEW_APPOINTMENTS} from "@/permissions/permissions";
+import {READ_ALL_PATIENTS, READ_ALL_USERS, VIEW_ALL_APPOINTMENTS} from "@/permissions/permissions";
 
 const adminMenu: SidebarMenuItem[] = [
 	{
-		title: "Users",
+		title: "Staff",
 		Icon: ContactIcon,
 		path: "/dashboard/admin/users",
 		need_permission: READ_ALL_USERS,
@@ -33,7 +33,7 @@ const adminMenu: SidebarMenuItem[] = [
 		title: "Appointments",
 		Icon: CalendarCheck,
 		path: "/dashboard/admin/appointments",
-		need_permission: VIEW_APPOINTMENTS,
+		need_permission: VIEW_ALL_APPOINTMENTS,
 	},
 ];
 

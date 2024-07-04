@@ -30,7 +30,6 @@ import {Helmet} from "react-helmet";
 import {APP_NAME} from "@/config";
 import {ErrorMessageAlert} from "@/components/utils/ErrorMessageAlert";
 import {LoadingScreen} from "@/components/utils/LoadingScreen";
-import {MAKE_APPPOINTMENTS} from "@/permissions/permissions";
 import {getOrgAppointmentListAPI} from "@/services/api/appointment/admin/list";
 import {AppointmentType} from "@/types/appointment";
 import AddAppointmentForm from "./AddAppointmentForm";
@@ -38,6 +37,7 @@ import {datePretty, timePretty} from "@/lib/dateTimeUtils";
 import {formatPhoneNumber} from "@/lib/phoneNumberFormatter";
 import {Badge} from "@/components/ui/badge";
 import SunRays from "@/components/utils/SunRays";
+import {MODIFY_ALL_APPOINTMENTS} from "@/permissions/permissions";
 
 export const columns: ColumnDef<AppointmentType>[] = [
 	{
@@ -135,7 +135,7 @@ export default function AdminAppointmentsDashboard() {
 					)}
 				</div>
 				<div>
-					<HasPermission id={MAKE_APPPOINTMENTS} fallback={<></>}>
+					<HasPermission id={MODIFY_ALL_APPOINTMENTS} fallback={<></>}>
 						<AddAppointmentForm>
 							<Button variant={"default"}>Create New Appoitment</Button>
 						</AddAppointmentForm>

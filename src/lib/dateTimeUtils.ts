@@ -96,8 +96,12 @@ export function timePretty(dt: string) {
 	);
 }
 
+/**
+ *
+ * @param dt - Date string `2022-11-02T23:15:14.327407Z`
+ * @returns string - `November 2022`
+ */
 export function monthYear(dt: string) {
-	// 2022-11-02T23:15:14.327407Z
 	const monthNames = [
 		"January",
 		"February",
@@ -119,10 +123,25 @@ export function monthYear(dt: string) {
 	return mm + " " + yy;
 }
 
+/**
+ * From date string
+ * @param dt - Date string
+ * @returns string
+ */
 export function weekDay(dt: string) {
 	const x = new Date(dt);
 	const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 	return days[x.getDay()];
+}
+
+/**
+ *
+ * @param day - 0 to 6 (Monday to Sunday)
+ * @returns string
+ */
+export function weekDayFromPython(day: number) {
+	const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+	return days[day];
 }
 
 export function monthPretty(month: number) {

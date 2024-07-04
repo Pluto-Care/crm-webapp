@@ -19,7 +19,7 @@ import {AxiosRequestErrorDetail, ErrorType} from "@/lib/handleAxiosError";
 import ErrorPageFallback from "./components/utils/ErrorPageFallback";
 import PatientDetailPage from "./pages/dashboard/admin/patients/patient/_index";
 import {LoadingScreen} from "./components/utils/LoadingScreen";
-import {READ_ALL_PATIENTS, READ_ALL_USERS, VIEW_APPOINTMENTS} from "./permissions/permissions";
+import {READ_ALL_PATIENTS, READ_ALL_USERS, VIEW_ALL_APPOINTMENTS} from "./permissions/permissions";
 import AppointmentsDashboard from "./pages/dashboard/my/appointments/_index";
 import MyAppointmentDetailPage from "./pages/dashboard/my/appointments/appointment/_index";
 import MyPatientsDashboard from "./pages/dashboard/my/patients/_index";
@@ -151,7 +151,7 @@ export default function App() {
 						element={
 							<SW>
 								<HasPermission
-									id={VIEW_APPOINTMENTS}
+									id={VIEW_ALL_APPOINTMENTS}
 									fallback={
 										<ErrorPageFallback
 											title="Permission Denied"
@@ -169,7 +169,7 @@ export default function App() {
 						element={
 							<SW>
 								<HasPermission
-									id={VIEW_APPOINTMENTS}
+									id={VIEW_ALL_APPOINTMENTS}
 									fallback={
 										<ErrorPageFallback
 											title="Permission Denied"
