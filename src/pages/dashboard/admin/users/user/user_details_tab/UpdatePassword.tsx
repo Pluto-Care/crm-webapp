@@ -16,9 +16,9 @@ import {Loader2} from "lucide-react";
 import {Checkbox} from "@/components/ui/checkbox";
 
 function generatePassword() {
-	const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	const lowercase = "abcdefghijklmnopqrstuvwxyz";
-	const numbers = "0123456789";
+	const uppercase = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+	const lowercase = "abcdefghijkmnopqrstuvwxyz";
+	const numbers = "123456789";
 	const symbols = "!@#$%^&*_+=";
 
 	const all = uppercase + lowercase + numbers + symbols;
