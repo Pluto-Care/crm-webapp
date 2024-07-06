@@ -13,7 +13,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {Button} from "@/components/ui/button";
 import {useMutation} from "@tanstack/react-query";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import {CalendarIcon, Loader2} from "lucide-react";
+import {CalendarIcon, Info, Loader2} from "lucide-react";
 import {Calendar} from "@/components/ui/calendar";
 import {format} from "date-fns";
 import {cn} from "@/lib/utils";
@@ -23,6 +23,7 @@ import {UserType} from "@/types/user";
 import spacetime from "spacetime";
 import {addAvailabilityAPI} from "@/services/api/availability/admin/add_by_admin";
 import {toast} from "sonner";
+import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
 
 const addAvailabilitySchema = z.object({
 	start_time: z.date(),
@@ -100,10 +101,17 @@ export default function AddAvailabilityForm({user}: {user: UserType}) {
 								name="start_date"
 								render={({field}) => (
 									<FormItem>
-										<FormLabel>
-											Start Date <span className="text-base text-red-500">*</span>
+										<FormLabel className="flex gap-2 place-items-center">
+											<div>
+												Start Date <span className="text-base leading-4 text-red-500">*</span>
+											</div>
+											<HoverCard>
+												<HoverCardTrigger>
+													<Info size={16} className="text-muted-foreground" />
+												</HoverCardTrigger>
+												<HoverCardContent>Set availability starting this day</HoverCardContent>
+											</HoverCard>
 										</FormLabel>
-										<br />
 										<Popover>
 											<PopoverTrigger asChild>
 												<FormControl>
@@ -136,7 +144,6 @@ export default function AddAvailabilityForm({user}: {user: UserType}) {
 												/>
 											</PopoverContent>
 										</Popover>
-										<FormDescription>Set availability starting this day</FormDescription>
 										{form.formState.errors.start_date && <FormMessage />}
 									</FormItem>
 								)}
@@ -146,8 +153,18 @@ export default function AddAvailabilityForm({user}: {user: UserType}) {
 								name="end_date"
 								render={({field}) => (
 									<FormItem>
-										<FormLabel>End Date</FormLabel>
-										<br />
+										<FormLabel className="flex gap-2 place-items-center">
+											<div>End Date</div>
+											<HoverCard>
+												<HoverCardTrigger>
+													<Info size={16} className="text-muted-foreground" />
+												</HoverCardTrigger>
+												<HoverCardContent>
+													Availability until and including this day. Leave this empty to set an
+													indefinite end date.
+												</HoverCardContent>
+											</HoverCard>
+										</FormLabel>
 										<Popover>
 											<PopoverTrigger asChild>
 												<FormControl>
@@ -180,10 +197,6 @@ export default function AddAvailabilityForm({user}: {user: UserType}) {
 												/>
 											</PopoverContent>
 										</Popover>
-										<FormDescription className="max-w-80">
-											Availability until and including this day. Leave this empty to set an
-											indefinite end date.
-										</FormDescription>
 										{form.formState.errors.start_date && <FormMessage />}
 									</FormItem>
 								)}
@@ -192,8 +205,19 @@ export default function AddAvailabilityForm({user}: {user: UserType}) {
 								control={form.control}
 								name="days"
 								render={({field}) => (
-									<FormItem className="mt-2">
-										<FormLabel>Week days</FormLabel>
+									<FormItem className="row-span-2">
+										<FormLabel className="flex gap-2 place-items-center">
+											<div>Week days</div>
+											<HoverCard>
+												<HoverCardTrigger>
+													<Info size={16} className="text-muted-foreground" />
+												</HoverCardTrigger>
+												<HoverCardContent>
+													Every week on these days (recurring). To set for a single day, leave this
+													field blank.
+												</HoverCardContent>
+											</HoverCard>
+										</FormLabel>
 										<FormControl>
 											<MultipleSelector
 												className="max-w-96"
@@ -220,24 +244,17 @@ export default function AddAvailabilityForm({user}: {user: UserType}) {
 												}
 											/>
 										</FormControl>
-										<FormDescription>
-											Every week on these days (recurring). To set for a single day, leave this
-											field blank.
-										</FormDescription>
 										<FormMessage />
 									</FormItem>
 								)}
 							/>
-						</div>
-
-						<div className="grid grid-cols-3 gap-4">
 							<FormField
 								control={form.control}
 								name="start_time"
 								render={({field}) => (
 									<FormItem>
 										<FormLabel>
-											Start time <span className="text-base text-red-500">*</span>
+											Start time <span className="text-base leading-4 text-red-500">*</span>
 										</FormLabel>
 										<FormControl>
 											<TimePicker12Demo date={field.value} setDate={field.onChange} />
@@ -253,7 +270,7 @@ export default function AddAvailabilityForm({user}: {user: UserType}) {
 								render={({field}) => (
 									<FormItem>
 										<FormLabel>
-											End time <span className="text-base text-red-500">*</span>
+											End time <span className="text-base leading-4 text-red-500">*</span>
 										</FormLabel>
 										<FormControl>
 											<TimePicker12Demo date={field.value} setDate={field.onChange} />

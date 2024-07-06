@@ -1,3 +1,5 @@
+import spacetime from "spacetime";
+
 export function timeSince(timestamp: string) {
 	const diff = Date.now() - Date.parse(timestamp);
 
@@ -46,22 +48,7 @@ export function timeSince(timestamp: string) {
 }
 
 export function dateTimePretty(dt: string) {
-	const x = new Date(dt);
-	const dd = x.getDate();
-	const yy = x.getFullYear();
-	return (
-		yy +
-		"/" +
-		("0" + (x.getMonth() + 1)).slice(-2) +
-		"/" +
-		("0" + dd).slice(-2) +
-		" at " +
-		("0" + (x.getHours() > 12 ? x.getHours() - 12 : x.getHours())).slice(-2) +
-		":" +
-		("0" + x.getMinutes()).slice(-2) +
-		" " +
-		(x.getHours() > 12 ? "pm" : "am")
-	);
+	return datePretty(dt) + " at " + timePretty(dt);
 }
 
 export function datePretty(dt: string) {
@@ -91,7 +78,6 @@ export function timePretty(dt: string) {
 		("0" + (x.getHours() > 12 ? x.getHours() - 12 : x.getHours())).slice(-2) +
 		":" +
 		("0" + x.getMinutes()).slice(-2) +
-		" " +
 		(x.getHours() > 12 ? "pm" : "am")
 	);
 }
@@ -173,4 +159,32 @@ export function formatPureDatePretty(date: string) {
 		", " +
 		date.split("-")[0]
 	);
+}
+
+/**
+ * User friendly time difference between two timezones. Compare it with the current timezone.
+ * eg. (3 hours ahead)
+ *
+ * @param timezone - eg. "America/New_York"
+ * @returns
+ */
+export function timediff(timezone: string) {
+	const here = spacetime.now();
+	const here_offset = here.timezone().current.offset;
+	const there_offset = here.goto(timezone).timezone().current.offset;
+	const diff = there_offset - here_offset; // eg. 3 or 11.5 or -4
+	const hours = Math.floor(diff);
+	const minutes = Math.round((diff - hours) * 60);
+	const is_ahead = diff > 0;
+	if (hours === 0 && minutes === 0) {
+		return "";
+	} else if (hours > 0 && minutes === 0) {
+		return "(" + hours + " hour" + (hours > 1 ? "s" : "") + (is_ahead ? " ahead" : " behind") + ")";
+	} else if (hours === 0 && minutes > 0) {
+		return (
+			"(" + minutes + " minute" + (minutes > 1 ? "s" : "") + (is_ahead ? " ahead" : " behind") + ")"
+		);
+	} else if (hours > 0 && minutes > 0) {
+		return "(" + hours + " hours " + minutes + " minutes" + (is_ahead ? " ahead" : " behind") + ")";
+	}
 }

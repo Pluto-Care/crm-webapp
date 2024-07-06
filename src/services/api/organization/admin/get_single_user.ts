@@ -11,14 +11,20 @@ import {APIErrorResponse} from "@/types/api";
  */
 export function getSingleUserAPI(user_id: string) {
 	return axios
-		.get(API_URL + "/api/organization/users/" + user_id + "/", {
+		.get(API_URL + "/api/organization/manage/users/" + user_id + "/", {
 			headers: {
 				"Content-Type": "application/json",
 			},
 			withCredentials: true,
 		})
 		.then((response) => {
-			return response.data.data as {user: UserType; permissions?: UserPermissions; role?: UserRole};
+			return response.data.data as {
+				user: UserType;
+				permissions?: UserPermissions;
+				role?: UserRole;
+				created_by: UserType | null;
+				updated_by: UserType | null;
+			};
 		})
 		.catch((error) => {
 			throw error.data as APIErrorResponse;

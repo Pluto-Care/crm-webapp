@@ -9,7 +9,7 @@ import {OrgUser} from "@/types/org";
  */
 export function getOrgUsersAPI() {
 	return axios
-		.get(API_URL + "/api/organization/users/", {
+		.get(API_URL + "/api/organization/manage/users/", {
 			headers: {
 				"Content-Type": "application/json",
 			},

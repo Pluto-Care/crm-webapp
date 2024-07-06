@@ -17,7 +17,7 @@ export type CreateUserType = {
  */
 export function createUserAPI(user: CreateUserType) {
 	return axios
-		.post(API_URL + "/api/organization/user/create/", user, {
+		.post(API_URL + "/api/organization/manage/user/create/", user, {
 			headers: {
 				"Content-Type": "application/json",
 			},
