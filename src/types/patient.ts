@@ -1,3 +1,5 @@
+import {UserType} from "./user";
+
 export type PatientType = {
 	id: string;
 	first_name: string;
@@ -22,8 +24,8 @@ export type PatientNoteType = {
 	id: string;
 	note: string;
 	created_at: string;
-	created_by: string;
+	created_by: UserType;
 	patient: string;
 	updated_at: string | null;
-	updated_by: string | null;
+	updated_by: UserType | null;
 };

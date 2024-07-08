@@ -105,11 +105,13 @@ export default function PatientNotes(props: Props) {
 								<div className="flex-1 pb-5 border-b border-muted">
 									<div className="flex items-center">
 										<div className="flex-1 text-sm">
-											<div className="font-medium">{note.created_by}</div>
+											<div className="font-medium">
+												{note.created_by.first_name} {note.created_by.last_name}
+											</div>
 											<div className="text-muted-foreground">{note.id}</div>
 										</div>
 										<div>
-											{auth_context.user?.detail.id === note.created_by || is_full_access ? (
+											{auth_context.user?.detail.id === note.created_by.id || is_full_access ? (
 												<DropdownMenu>
 													<DropdownMenuTrigger asChild>
 														<Button variant="ghost" className="px-0 py-0 size-8">
