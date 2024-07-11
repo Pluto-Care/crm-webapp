@@ -1,5 +1,8 @@
+import {DefaultError} from "@tanstack/react-query";
 import {AxiosError} from "axios";
 import {Dispatch, SetStateAction} from "react";
+
+export interface AxiosTqError extends DefaultError, AxiosError<any> {}
 
 export interface ErrorType {
 	id: string;

@@ -3,6 +3,7 @@ import {Checkbox} from "@/components/ui/checkbox";
 import {FormField} from "@/components/ui/form";
 import {
 	APPOINTMENT_PERMISSIONS,
+	CALL_PERMISSIONS,
 	CustomPermissionType,
 	LOGS_PERMISSIONS,
 	ORGANIZATION_PERMISSIONS,
@@ -85,48 +86,58 @@ export function PermissionsTab(props: IPermissionsTabProps) {
 						})}
 					</div>
 				</fieldset>
-				<div className="grid items-start w-full gap-6">
-					<PermissionSection
-						form={form}
-						title="User Handling"
-						permissions={USER_PERMISSIONS}
-						user_perms={props.permissions}
-					/>
-					<PermissionSection
-						form={form}
-						title="Patient Handling"
-						permissions={PATIENT_PERMISSIONS}
-						user_perms={props.permissions}
-					/>
-					<PermissionSection
-						form={form}
-						title="Organization Handling"
-						permissions={ORGANIZATION_PERMISSIONS}
-						user_perms={props.permissions}
-					/>
-					<PermissionSection
-						form={form}
-						title="Logs"
-						permissions={LOGS_PERMISSIONS}
-						user_perms={props.permissions}
-					/>
-					<PermissionSection
-						form={form}
-						title="Appointments"
-						permissions={APPOINTMENT_PERMISSIONS}
-						user_perms={props.permissions}
-					/>
-					<PermissionSection
-						form={form}
-						title="Scheduling"
-						permissions={SCHEDULING_PERMISSIONS}
-						user_perms={props.permissions}
-						description="User always have access to change their own availability. These permissions are for admins to view and modify other staff's availability."
-					/>
-					<Button disabled={mutation.isPending}>
-						{mutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-						Save Permissions
-					</Button>
+				<div className="relative flex flex-col">
+					<div className="grid items-start flex-1 w-full gap-6">
+						<PermissionSection
+							form={form}
+							title="User Handling"
+							permissions={USER_PERMISSIONS}
+							user_perms={props.permissions}
+						/>
+						<PermissionSection
+							form={form}
+							title="Patient Handling"
+							permissions={PATIENT_PERMISSIONS}
+							user_perms={props.permissions}
+						/>
+						<PermissionSection
+							form={form}
+							title="Organization Handling"
+							permissions={ORGANIZATION_PERMISSIONS}
+							user_perms={props.permissions}
+						/>
+						<PermissionSection
+							form={form}
+							title="Appointments"
+							permissions={APPOINTMENT_PERMISSIONS}
+							user_perms={props.permissions}
+						/>
+						<PermissionSection
+							form={form}
+							title="Calling"
+							permissions={CALL_PERMISSIONS}
+							user_perms={props.permissions}
+						/>
+						<PermissionSection
+							form={form}
+							title="Scheduling"
+							permissions={SCHEDULING_PERMISSIONS}
+							user_perms={props.permissions}
+							description="User always have access to change their own availability. These permissions are for admins to view and modify other staff's availability."
+						/>
+						<PermissionSection
+							form={form}
+							title="Miscellaneous"
+							permissions={LOGS_PERMISSIONS}
+							user_perms={props.permissions}
+						/>
+					</div>
+					<div className="w-full pt-4 pb-2 mt-4 bg-gradient-to-b from-transparent to-background">
+						<Button disabled={mutation.isPending} className="w-full">
+							{mutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+							Save Permissions
+						</Button>
+					</div>
 				</div>
 			</form>
 		</div>
