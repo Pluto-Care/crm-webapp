@@ -23,7 +23,7 @@ export default function UserAvailabilityList({
 				<LoadingScreen />
 			) : query.isSuccess ? (
 				<>
-					<div className="flex my-8 place-items-center">
+					<div className="flex mb-8 place-items-center">
 						<h3 className="flex-1">Availabilities</h3>
 						<Button
 							variant={"outline"}

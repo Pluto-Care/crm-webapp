@@ -111,7 +111,9 @@ export default function AddAppointmentForm(props: Props) {
 									name="patient"
 									render={({field}) => (
 										<FormItem>
-											<FormLabel>Patient</FormLabel>
+											<FormLabel>
+												Patient <span className="text-base leading-4 text-destructive">*</span>
+											</FormLabel>
 											<PatientSelector form={form} field={field} />
 											{form.formState.errors.patient && <FormMessage />}
 											<HasPermission id={CREATE_PATIENTS} fallback={<></>}>
@@ -132,7 +134,9 @@ export default function AddAppointmentForm(props: Props) {
 									name="assigned_to"
 									render={({field}) => (
 										<FormItem>
-											<FormLabel>Assigned To</FormLabel>
+											<FormLabel>
+												Assigned To <span className="text-base leading-4 text-destructive">*</span>
+											</FormLabel>
 											{props.self ? (
 												<Input
 													disabled={true}
@@ -164,7 +168,9 @@ export default function AddAppointmentForm(props: Props) {
 									name="date"
 									render={({field}) => (
 										<FormItem>
-											<FormLabel>Date</FormLabel>
+											<FormLabel>
+												Date <span className="text-base leading-4 text-destructive">*</span>
+											</FormLabel>
 											<br />
 											<Popover>
 												<PopoverTrigger asChild>
@@ -208,7 +214,9 @@ export default function AddAppointmentForm(props: Props) {
 										name="type"
 										render={({field}) => (
 											<FormItem>
-												<FormLabel>Type</FormLabel>
+												<FormLabel>
+													Type <span className="text-base leading-4 text-destructive">*</span>
+												</FormLabel>
 												<RadioGroup
 													onValueChange={field.onChange}
 													defaultValue={field.value}
@@ -258,7 +266,9 @@ export default function AddAppointmentForm(props: Props) {
 										name="start_time"
 										render={({field}) => (
 											<FormItem>
-												<FormLabel>Start Time</FormLabel>
+												<FormLabel>
+													Start Time <span className="text-base leading-4 text-destructive">*</span>
+												</FormLabel>
 												<RadioGroup
 													onValueChange={field.onChange}
 													defaultValue={field.value}
@@ -289,7 +299,10 @@ export default function AddAppointmentForm(props: Props) {
 										name="duration"
 										render={({field}) => (
 											<FormItem>
-												<FormLabel>Duration (in minutes)</FormLabel>
+												<FormLabel>
+													Duration (in minutes){" "}
+													<span className="text-base leading-4 text-destructive">*</span>
+												</FormLabel>
 												<FormControl>
 													<Input {...field} />
 												</FormControl>
@@ -305,7 +318,9 @@ export default function AddAppointmentForm(props: Props) {
 									name="reason"
 									render={({field}) => (
 										<FormItem>
-											<FormLabel>Reason</FormLabel>
+											<FormLabel>
+												Reason <span className="text-base leading-4 text-destructive">*</span>
+											</FormLabel>
 											<FormControl>
 												<Textarea
 													placeholder="Reason for the appointment"

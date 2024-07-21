@@ -1,6 +1,7 @@
-import Sidebar from "./Sidebar";
+import React from "react";
 import Topbar from "./Topbar";
 import {Toaster} from "@/components/ui/sonner";
+const Sidebar = React.lazy(() => import("./Sidebar"));
 
 interface Props {
 	children: React.ReactNode;

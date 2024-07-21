@@ -16,7 +16,11 @@ import {Helmet} from "react-helmet";
 import {Link, Navigate, useParams} from "react-router-dom";
 import {PermissionsTab} from "./PermissionsTab";
 import {HasPermission} from "@/contexts/auth";
-import {MODIFY_USER_PERMISSIONS} from "@/permissions/permissions";
+import {
+	MODIFY_ALL_AVAILABILITIES,
+	MODIFY_USER_PERMISSIONS,
+	VIEW_ALL_AVAILABILITIES,
+} from "@/permissions/permissions";
 import AddAvailabilityForm from "./availability/AddAvailability";
 import UserAvailabilityList from "./availability/List";
 import {timediff} from "@/lib/dateTimeUtils";
@@ -120,11 +124,23 @@ export default function UserDetailPage() {
 										</HasPermission>
 									</TabsContent>
 									<TabsContent value="availability" className="!mt-0">
-										<AddAvailabilityForm user={user_query.data.user} />
-										<UserAvailabilityList
-											user_id={user_id}
-											timezone={user_query.data.user.timezone}
-										/>
+										<HasPermission
+											id={VIEW_ALL_AVAILABILITIES}
+											fallback={
+												<ErrorMessageAlert
+													title="Permission Denied"
+													message="You do not have permission to view availabilities."
+												/>
+											}
+										>
+											<HasPermission id={MODIFY_ALL_AVAILABILITIES} fallback={<></>}>
+												<AddAvailabilityForm user={user_query.data.user} />
+											</HasPermission>
+											<UserAvailabilityList
+												user_id={user_id}
+												timezone={user_query.data.user.timezone}
+											/>
+										</HasPermission>
 									</TabsContent>
 								</div>
 							</div>

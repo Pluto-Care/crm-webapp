@@ -99,7 +99,7 @@ export default function UpdatePassword({
 			<DialogTrigger asChild>{children}</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">
 				<DialogHeader>
-					<DialogTitle>Reset Password</DialogTitle>
+					<DialogTitle className="text-2xl">Reset Password</DialogTitle>
 				</DialogHeader>
 				{mutation.isSuccess ? (
 					<>

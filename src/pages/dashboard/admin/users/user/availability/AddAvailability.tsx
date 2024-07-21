@@ -76,7 +76,7 @@ export default function AddAvailabilityForm({user}: {user: UserType}) {
 	};
 
 	return (
-		<div className="px-6 py-6 border rounded-xl">
+		<div className="px-6 py-6 mb-8 border rounded-xl">
 			<h3>Add Availability</h3>
 			<p className="text-sm text-muted-foreground">
 				The availability will be set according to timezone set for this user which is{" "}

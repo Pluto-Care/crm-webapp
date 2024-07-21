@@ -59,6 +59,8 @@ export default function AddUserForm(props: {children: React.ReactNode}) {
 		mutation.mutate(data);
 	};
 
+	console.log("render");
+
 	return (
 		<Dialog>
 			<DialogTrigger asChild>{props.children}</DialogTrigger>
@@ -85,7 +87,9 @@ export default function AddUserForm(props: {children: React.ReactNode}) {
 										name="first_name"
 										render={({field}) => (
 											<FormItem>
-												<FormLabel>First name</FormLabel>
+												<FormLabel>
+													First name <span className="text-base leading-4 text-destructive">*</span>
+												</FormLabel>
 												<FormControl>
 													<Input {...field} />
 												</FormControl>
@@ -98,7 +102,9 @@ export default function AddUserForm(props: {children: React.ReactNode}) {
 										name="last_name"
 										render={({field}) => (
 											<FormItem>
-												<FormLabel>Last name</FormLabel>
+												<FormLabel>
+													Last name <span className="text-base leading-4 text-destructive">*</span>
+												</FormLabel>
 												<FormControl>
 													<Input {...field} />
 												</FormControl>
@@ -112,7 +118,9 @@ export default function AddUserForm(props: {children: React.ReactNode}) {
 									name="email"
 									render={({field}) => (
 										<FormItem>
-											<FormLabel>Email</FormLabel>
+											<FormLabel>
+												Email <span className="text-base leading-4 text-destructive">*</span>
+											</FormLabel>
 											<FormControl>
 												<Input {...field} />
 											</FormControl>
@@ -125,7 +133,9 @@ export default function AddUserForm(props: {children: React.ReactNode}) {
 									name="password"
 									render={({field}) => (
 										<FormItem>
-											<FormLabel>Password</FormLabel>
+											<FormLabel>
+												Password <span className="text-base leading-4 text-destructive">*</span>
+											</FormLabel>
 											<FormControl>
 												<Input type="password" {...field} />
 											</FormControl>
@@ -143,7 +153,10 @@ export default function AddUserForm(props: {children: React.ReactNode}) {
 									name="confirm_password"
 									render={({field}) => (
 										<FormItem>
-											<FormLabel>Confirm Password</FormLabel>
+											<FormLabel>
+												Confirm Password{" "}
+												<span className="text-base leading-4 text-destructive">*</span>
+											</FormLabel>
 											<FormControl>
 												<Input type="password" {...field} />
 											</FormControl>
