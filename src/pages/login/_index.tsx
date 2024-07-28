@@ -88,6 +88,18 @@ function LoginForm({location}: {location?: Location<any>}) {
 		await signIn(form.getValues("email"), form.getValues("password"), token);
 	};
 
+	function parseErrorDetail(error: ErrorType) {
+		{
+			error?.errors.code === "InvalidTOTPToken" || error?.errors.code === "InvalidTOTPTokenTooLong"
+				? (error?.errors.detail as string)
+				: "Something went wrong";
+		}
+		if (error?.errors.code === "LoginSerializerErrors") {
+			return error.errors.detail["non_field_errors"][0] as string;
+		}
+		return error.errors.title;
+	}
+
 	return (
 		<>
 			<SignedOut>
@@ -124,7 +136,7 @@ function LoginForm({location}: {location?: Location<any>}) {
 											<Alert variant="destructive">
 												<AlertCircle className="w-4 h-4" />
 												<AlertTitle>Error</AlertTitle>
-												<AlertDescription>{error.title}</AlertDescription>
+												<AlertDescription>{parseErrorDetail(error)}</AlertDescription>
 											</Alert>
 										)}
 										<FormField
@@ -302,11 +314,11 @@ function JoinMFA({mfa_join_token}: {mfa_join_token: string}) {
 										{mutation.isError && (
 											<Alert className="mt-6" variant="destructive">
 												<CircleXIcon className="w-4 h-4" />
-												<AlertTitle>{error?.title ?? "Error"}</AlertTitle>
+												<AlertTitle>{error?.errors.title ?? "Error"}</AlertTitle>
 												<AlertDescription>
-													{error?.code === "InvalidTOTPToken" ||
-													error?.code === "InvalidTOTPTokenTooLong"
-														? (error?.detail as string)
+													{error?.errors.code === "InvalidTOTPToken" ||
+													error?.errors.code === "InvalidTOTPTokenTooLong"
+														? (error?.errors.detail as string)
 														: "Something went wrong"}
 												</AlertDescription>
 											</Alert>
@@ -417,11 +429,11 @@ function EnterTotp({
 					<Form {...form}>
 						<form onSubmit={form.handleSubmit(onSubmit)}>
 							<div className="space-y-4">
-								{error && error.code === "TOTPIncorrect" && (
+								{error && error.errors.code === "TOTPIncorrect" && (
 									<Alert className="mt-6" variant="destructive">
 										<AlertCircle className="w-4 h-4" />
 										<AlertTitle>Error</AlertTitle>
-										<AlertDescription>{error.detail as string}</AlertDescription>
+										<AlertDescription>{error.errors.detail as string}</AlertDescription>
 									</Alert>
 								)}
 								<FormField

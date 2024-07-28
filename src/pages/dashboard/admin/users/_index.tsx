@@ -9,17 +9,8 @@ import {
 } from "@tanstack/react-table";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Input} from "@/components/ui/input";
-import {MoreHorizontal} from "lucide-react";
 
 import {Button} from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 import {useQuery} from "@tanstack/react-query";
 import {useState} from "react";
@@ -51,39 +42,14 @@ export const columns: ColumnDef<OrgUser>[] = [
 		header: "Email",
 	},
 	{
+		accessorKey: "active",
+		header: "Active",
+		accessorFn: (row) => (row.is_active ? "Yes" : "Disabled"),
+	},
+	{
 		accessorKey: "created_at",
 		header: "Created On",
 		accessorFn: (row) => datePretty(row.created_at) + " at " + timePretty(row.created_at),
-	},
-	{
-		id: "actions",
-		cell: ({row}) => {
-			return (
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="ghost" className="w-8 h-8 p-0">
-							<span className="sr-only">Open menu</span>
-							<MoreHorizontal className="w-4 h-4" />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
-						<DropdownMenuItem>View details</DropdownMenuItem>
-						<DropdownMenuItem>Files</DropdownMenuItem>
-						<DropdownMenuItem>Calling History</DropdownMenuItem>
-						<DropdownMenuSeparator />
-						<DropdownMenuLabel>Actions</DropdownMenuLabel>
-						<DropdownMenuItem
-							onClick={() => {
-								console.log(row);
-							}}
-						>
-							Edit Profile
-						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => {}}>Delete</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
-			);
-		},
 	},
 ];
 

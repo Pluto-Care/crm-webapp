@@ -26,7 +26,6 @@ export const FULL_ACCESS = "full_access";
 export const CREATE_USERS = "create:new_user";
 export const UPDATE_USER_PROFILE = "update:user";
 export const DELETE_USER = "delete:user";
-export const DELETE_USER_MFA = "delete:user_mfa";
 export const UPDATE_USER_MFA = "update:user_mfa";
 export const UPDATE_USER_PASSWORD = "update:user_password";
 export const DISABLE_USER = "disable:user";
@@ -65,8 +64,7 @@ export const USER_PERMISSIONS: CustomPermissionType[] = [
 	{id: CREATE_USERS, name: "Create new user"},
 	{id: UPDATE_USER_PROFILE, name: "Update user"},
 	{id: DELETE_USER, name: "Delete user"},
-	{id: DELETE_USER_MFA, name: "Delete user MFA"},
-	{id: UPDATE_USER_MFA, name: "Update user MFA"},
+	{id: UPDATE_USER_MFA, name: "Modify user MFA"},
 	{
 		id: UPDATE_USER_PASSWORD,
 		name: "Update user password",

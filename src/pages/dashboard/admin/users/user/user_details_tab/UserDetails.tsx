@@ -7,6 +7,7 @@ import UpdateProfile from "./UpdateProfile";
 import {Badge} from "@/components/ui/badge";
 import {HasPermission} from "@/contexts/auth";
 import {UPDATE_USER_PASSWORD, UPDATE_USER_PROFILE} from "@/permissions/permissions";
+import UserDetailsMoreOptions from "./MoreOptions";
 
 export default function UserDetails({
 	user,
@@ -42,9 +43,9 @@ export default function UserDetails({
 						</div>
 						<div className="col-span-2 text-muted-foreground">Timezone:</div>
 						<div className="col-span-4">
-							{user.timezone} {tzdiff ? `(${tzdiff})` : ""}
+							{user.timezone} {tzdiff ? `${tzdiff}` : ""}
 						</div>
-						<div className="flex col-span-6 gap-4 mt-7">
+						<div className="flex col-span-6 gap-3 mt-7">
 							<HasPermission id={UPDATE_USER_PASSWORD} fallback={<></>}>
 								<UpdatePassword user_id={user.id}>
 									<Button variant={"outline"} size={"sm"}>
@@ -59,9 +60,7 @@ export default function UserDetails({
 									</Button>
 								</UpdateProfile>
 							</HasPermission>
-							{/* <Button variant={"secondary"} className="p-0 aspect-square" size={"sm"}>
-								<MoreVertical size={18} strokeWidth={2.75} />
-							</Button> */}
+							<UserDetailsMoreOptions user={user} />
 						</div>
 					</div>
 				</div>

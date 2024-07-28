@@ -8,10 +8,10 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {useAuth, useSignOut} from "@/contexts/auth";
+import {HasPermission, useAuth, useSignOut} from "@/contexts/auth";
 import {useTheme} from "@/components/theme-provider";
-import {Skeleton} from "@/components/ui/skeleton";
 import {SidebarMobile} from "./Sidebar";
+import {UPDATE_ORGANIZATION} from "@/permissions/permissions";
 
 export default function Topbar() {
 	const {theme, setTheme} = useTheme();
@@ -52,7 +52,11 @@ export default function Topbar() {
 							</div>
 						</div>
 					) : (
-						<Skeleton className="h-9 w-[250px]" />
+						<HasPermission id={UPDATE_ORGANIZATION} fallback={<></>}>
+							<Button variant={"accent"} size={"sm"}>
+								Update Organization
+							</Button>
+						</HasPermission>
 					)}
 				</div>
 				<DropdownMenu>

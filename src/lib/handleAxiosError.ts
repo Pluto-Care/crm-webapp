@@ -6,11 +6,15 @@ export interface AxiosTqError extends DefaultError, AxiosError<any> {}
 
 export interface ErrorType {
 	id: string;
-	code: string | null;
-	detail: string | {[key: string]: string | boolean | number | []} | AxiosRequestErrorDetail | null;
-	instance: string;
+	data: null;
+	errors: {
+		code: string | null;
+		detail: any;
+		instance: string;
+		title: string;
+	};
 	status: number;
-	title: string;
+	success: boolean;
 }
 
 export interface AxiosRequestErrorDetail {
