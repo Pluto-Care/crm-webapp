@@ -18,7 +18,7 @@ export function createPatientNoteAPI({
 }) {
 	return axios
 		.post(
-			API_URL + `/api/patients/list/${patient_id}/notes/new/`,
+			API_URL + `/api/patients/list/${patient_id}/notes/general/new/`,
 			{
 				note: note_text,
 			},

@@ -12,6 +12,8 @@ import {HasPermission, useAuth, useSignOut} from "@/contexts/auth";
 import {useTheme} from "@/components/theme-provider";
 import {SidebarMobile} from "./Sidebar";
 import {UPDATE_ORGANIZATION} from "@/permissions/permissions";
+import CreateOrgProfileDialog from "./CreateOrgProfileDialog";
+import UpdateOrgProfileDialog from "./UpdateOrgProfileDialog";
 
 export default function Topbar() {
 	const {theme, setTheme} = useTheme();
@@ -42,20 +44,41 @@ export default function Topbar() {
 				</div>
 				<div className="flex items-center">
 					{auth_context.org ? (
-						<div className="flex items-center gap-2 px-2.5 py-1 min-w-40 text-sm border rounded-lg">
-							<Hospital strokeWidth={1.75} absoluteStrokeWidth className="size-5" />
-							<div>
-								<div className="font-medium leading-4">{auth_context.org.name}</div>
-								<div className="leading-4 text-muted-foreground">
-									{auth_context.org.city}, {auth_context.org.state}
-								</div>
-							</div>
-						</div>
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button
+									variant={"outline"}
+									className="flex items-center gap-2 px-2.5 py-1.5 !h-auto min-w-40 text-sm border rounded-lg"
+								>
+									<Hospital strokeWidth={1.75} absoluteStrokeWidth className="size-5" />
+									<div className="text-start">
+										<div className="font-medium leading-4">{auth_context.org.name}</div>
+										<div className="leading-4 text-muted-foreground">
+											{auth_context.org.city}, {auth_context.org.state}
+										</div>
+									</div>
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end">
+								<HasPermission id={UPDATE_ORGANIZATION} fallback={<></>}>
+									<UpdateOrgProfileDialog>
+										<DropdownMenuItem
+											className="flex items-center gap-2"
+											onSelect={(e) => e.preventDefault()}
+										>
+											<span>Update Org Profile</span>
+										</DropdownMenuItem>
+									</UpdateOrgProfileDialog>
+								</HasPermission>
+							</DropdownMenuContent>
+						</DropdownMenu>
 					) : (
 						<HasPermission id={UPDATE_ORGANIZATION} fallback={<></>}>
-							<Button variant={"accent"} size={"sm"}>
-								Update Organization
-							</Button>
+							<CreateOrgProfileDialog>
+								<Button variant={"accent"} size={"sm"}>
+									Update Organization
+								</Button>
+							</CreateOrgProfileDialog>
 						</HasPermission>
 					)}
 				</div>

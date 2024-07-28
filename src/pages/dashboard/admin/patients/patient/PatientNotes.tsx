@@ -7,9 +7,9 @@ import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/
 import {Textarea} from "@/components/ui/textarea";
 import {toast} from "sonner";
 import {useMutation, useQuery} from "@tanstack/react-query";
-import {createPatientNoteAPI} from "@/services/api/patients/notes/create";
+import {createPatientNoteAPI} from "@/services/api/patients/general_notes/create";
 import {CheckCircle, Edit, Loader2, MoreVertical, Trash2} from "lucide-react";
-import {getAllPatientNotesAPI} from "@/services/api/patients/notes/list";
+import {getAllPatientNotesAPI} from "@/services/api/patients/general_notes/list";
 import {datePretty, timePretty} from "@/lib/dateTimeUtils";
 import {Avatar, AvatarFallback} from "@/components/ui/avatar";
 import {

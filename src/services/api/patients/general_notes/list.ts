@@ -10,7 +10,7 @@ import {PatientNoteType} from "@/types/patient";
  */
 export function getAllPatientNotesAPI({patient_id}: {patient_id: string}) {
 	return axios
-		.get(API_URL + `/api/patients/list/${patient_id}/notes/`, {
+		.get(API_URL + `/api/patients/list/${patient_id}/notes/general/`, {
 			headers: {
 				"Content-Type": "application/json",
 			},
