@@ -23,6 +23,7 @@ import {READ_ALL_PATIENTS, READ_ALL_USERS, VIEW_ALL_APPOINTMENTS} from "./permis
 import AppointmentsDashboard from "./pages/dashboard/my/appointments/_index";
 import MyAppointmentDetailPage from "./pages/dashboard/my/appointments/appointment/_index";
 import MyPatientsDashboard from "./pages/dashboard/my/patients/_index";
+import ResetPasswordCompletionPage from "./pages/reset_password/_index";
 
 const Dashboard = React.lazy(() => import("@/pages/dashboard/_index"));
 const LoginPage = React.lazy(() => import("@/pages/login/_index"));
@@ -60,6 +61,22 @@ export default function App() {
 					element={
 						<SW>
 							<LoginPage />
+						</SW>
+					}
+				/>
+				<Route
+					path={"/login"}
+					element={
+						<SW>
+							<LoginPage />
+						</SW>
+					}
+				/>
+				<Route
+					path={"/forgot-password/complete"}
+					element={
+						<SW>
+							<ResetPasswordCompletionPage />
 						</SW>
 					}
 				/>

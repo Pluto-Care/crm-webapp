@@ -7,7 +7,15 @@ import {QRCodeSVG} from "qrcode.react";
 import {Button} from "@/components/ui/button";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
-import {AlertCircle, CheckIcon, CircleX, CircleXIcon, CopyIcon, Loader2} from "lucide-react";
+import {
+	AlertCircle,
+	ArrowRight,
+	CheckIcon,
+	CircleX,
+	CircleXIcon,
+	CopyIcon,
+	Loader2,
+} from "lucide-react";
 import {SignedIn, SignedOut, useAuth, useSignIn} from "@/contexts/auth";
 import {AuthUserLastTokenSessionType, AuthUserLastWebSessionType} from "@/types/auth";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
@@ -27,6 +35,7 @@ import {
 import {AxiosError} from "axios";
 import {ErrorType, handleAxiosError} from "@/lib/handleAxiosError";
 import Logo from "@/assets/images/full-logo.svg";
+import ForgotPasswordDialog from "./ForgotPasswordDialog";
 
 export default function LoginPage() {
 	const location = useLocation();
@@ -171,20 +180,25 @@ function LoginForm({location}: {location?: Location<any>}) {
 									<Button type="submit" disabled={loading}>
 										{loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
 										Continue
-									</Button>
-									<Button
-										variant={"link"}
-										size={"stripped"}
-										type="button"
-										onClick={() => {
-											//TODO: Implement forgot password
-										}}
-									>
-										Forgot your password?
+										<ArrowRight className="w-4 h-4 ml-2" />
 									</Button>
 								</CardFooter>
 							</form>
 						</Form>
+						<CardContent>
+							<ForgotPasswordDialog>
+								<Button
+									variant={"link"}
+									size={"stripped"}
+									type="button"
+									onClick={() => {
+										//TODO: Implement forgot password
+									}}
+								>
+									Forgot your password?
+								</Button>
+							</ForgotPasswordDialog>
+						</CardContent>
 					</Card>
 				)}
 			</SignedOut>
