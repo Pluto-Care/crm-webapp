@@ -75,8 +75,8 @@ export default function UserDetails({
 							<tr>
 								<td className="pt-1 pr-10 text-muted-foreground min-w-16">Last Changed by User</td>
 								<td className="text-[95%] pt-px">
-									{password_change && password_change.date_last_changed_by_admin
-										? dateTimePretty(password_change.date_last_changed_by_admin)
+									{password_change && password_change.date_last_changed_by_user
+										? dateTimePretty(password_change.date_last_changed_by_user)
 										: "Never"}{" "}
 									{password_change?.last_pswd_change_method_by_user ? (
 										<>({password_change?.last_pswd_change_method_by_user})</>
@@ -100,7 +100,7 @@ export default function UserDetails({
 									{password_change && password_change.pswd_change_lock_til ? (
 										Date.now() - Date.parse(password_change.pswd_change_lock_til) < 0 ? (
 											<>
-												<Badge variant={"outline"}>Active</Badge> Ends{" "}
+												<Badge variant={"outline"}>Active</Badge> ends{" "}
 												{dateTimePretty(password_change.pswd_change_lock_til)}
 											</>
 										) : (
