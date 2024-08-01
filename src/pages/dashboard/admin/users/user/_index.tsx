@@ -99,6 +99,7 @@ export default function UserDetailPage() {
 												user={user_query.data.user}
 												created_by={user_query.data.created_by}
 												updated_by={user_query.data.updated_by}
+												password_change={user_query.data.password_change}
 											/>
 										)}
 									</TabsContent>

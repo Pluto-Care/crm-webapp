@@ -1,4 +1,4 @@
-import {UserType} from "@/types/user";
+import {UserPasswordChangeType, UserType} from "@/types/user";
 import {Avatar, AvatarFallback} from "@/components/ui/avatar";
 import {dateTimePretty, timediff} from "@/lib/dateTimeUtils";
 import {Button} from "@/components/ui/button";
@@ -13,10 +13,12 @@ export default function UserDetails({
 	user,
 	created_by,
 	updated_by,
+	password_change,
 }: {
 	user: UserType;
 	created_by: UserType | null;
 	updated_by: UserType | null;
+	password_change: UserPasswordChangeType | null;
 }) {
 	const tzdiff = timediff(user.timezone);
 	return (
@@ -66,6 +68,52 @@ export default function UserDetails({
 				</div>
 			</div>
 			<div className="grid grid-cols-2 gap-8 px-3 py-4 pt-4 my-6 mt-10 bg-muted rounded-xl">
+				<div className="col-span-2">
+					<h5 className="px-2 mb-3">Password Changes</h5>
+					<div className="p-4 space-y-1 text-[95%] bg-white dark:bg-zinc-950 shadow-sm rounded-lg">
+						<table>
+							<tr>
+								<td className="pt-1 pr-10 text-muted-foreground min-w-16">Last Changed by User</td>
+								<td className="text-[95%] pt-px">
+									{password_change && password_change.date_last_changed_by_admin
+										? dateTimePretty(password_change.date_last_changed_by_admin)
+										: "Never"}{" "}
+									{password_change?.last_pswd_change_method_by_user ? (
+										<>({password_change?.last_pswd_change_method_by_user})</>
+									) : (
+										<></>
+									)}
+								</td>
+							</tr>
+							<tr>
+								<td className="pt-1 pr-10 text-muted-foreground min-w-16">Last Changed by Admin</td>
+								<td className="text-[95%] pt-px">
+									{password_change && password_change.date_last_changed_by_admin
+										? dateTimePretty(password_change.date_last_changed_by_admin)
+										: "Never"}
+								</td>
+							</tr>
+
+							<tr>
+								<td className="pt-1 pr-10 text-muted-foreground min-w-16">Password Change Lock</td>
+								<td className="text-[95%] pt-px">
+									{password_change && password_change.pswd_change_lock_til ? (
+										Date.now() - Date.parse(password_change.pswd_change_lock_til) < 0 ? (
+											<>
+												<Badge variant={"outline"}>Active</Badge> Ends{" "}
+												{dateTimePretty(password_change.pswd_change_lock_til)}
+											</>
+										) : (
+											"None"
+										)
+									) : (
+										"None"
+									)}
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
 				<div>
 					<h5 className="px-2 mb-3">Added</h5>
 					<div className="p-4 space-y-1 text-[95%] bg-white dark:bg-zinc-950 shadow-sm rounded-lg">

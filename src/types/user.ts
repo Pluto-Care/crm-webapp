@@ -18,3 +18,11 @@ export type UserRole = {
 };
 
 export type UserPermissions = {id: string; name: string}[];
+
+export type UserPasswordChangeType = {
+	date_last_changed_by_user: string | null;
+	date_last_changed_by_admin: string | null;
+	last_changed_by_admin: string | null;
+	last_pswd_change_method_by_user: string | null;
+	pswd_change_lock_til: string | null;
+};

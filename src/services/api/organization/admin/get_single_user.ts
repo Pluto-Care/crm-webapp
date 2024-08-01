@@ -1,6 +1,6 @@
 import axios from "axios";
 import {API_URL} from "@/config";
-import {UserPermissions, UserRole, UserType} from "@/types/user";
+import {UserPasswordChangeType, UserPermissions, UserRole, UserType} from "@/types/user";
 import {APIErrorResponse} from "@/types/api";
 
 /**
@@ -24,6 +24,7 @@ export function getSingleUserAPI(user_id: string) {
 				role?: UserRole;
 				created_by: UserType | null;
 				updated_by: UserType | null;
+				password_change: UserPasswordChangeType | null;
 			};
 		})
 		.catch((error) => {

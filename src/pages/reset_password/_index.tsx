@@ -58,6 +58,8 @@ export default function ResetPasswordCompletionPage() {
 function parseErrorDetail(error: ErrorType) {
 	if (error?.errors.code === "HealthCheckFailed") {
 		return error.errors.detail["non_field_errors"][0] as string;
+	} else if (error?.errors.code === "PasswordChangeLocked") {
+		return error.errors.detail as string;
 	}
 	return error.errors.title;
 }
@@ -106,6 +108,21 @@ function ResetForm({token}: {token: string}) {
 				</CardContent>
 			</Card>
 		</>
+	) : error && error.toLowerCase().includes("administrator") ? (
+		<Card className="w-full max-w-md">
+			<CardContent className="p-6 space-y-4">
+				<h1 className="text-2xl font-semibold">Password Reset Error</h1>
+				<Alert variant="destructive">
+					<AlertCircle className="w-4 h-4" />
+					<AlertTitle>Error</AlertTitle>
+					<AlertDescription>{error}</AlertDescription>
+				</Alert>
+				<Link to="/login" className="flex items-center text-sm underline text-primary">
+					<ArrowLeft className="w-4 h-4 mr-2" />
+					<span>Back to login</span>
+				</Link>
+			</CardContent>
+		</Card>
 	) : (
 		<>
 			<Card className="w-full max-w-md">
