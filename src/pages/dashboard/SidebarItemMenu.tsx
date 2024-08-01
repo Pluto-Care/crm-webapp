@@ -51,7 +51,9 @@ function Item({item, isMobile}: {item: MenuItem; isMobile: boolean}) {
 		<Link
 			to={item.path}
 			className={
-				(location.startsWith(item.path) ? "bg-zinc-800" : "bg-transparent") +
+				(location.startsWith(item.path) && !location.split(item.path)[1].slice(1).includes("/")
+					? "bg-zinc-800"
+					: "bg-transparent") +
 				" flex items-center gap-3 px-3 py-2 transition-colors rounded-lg text-zinc-100 hover:outline hover:outline-1 hover:outline-zinc-400"
 			}
 		>

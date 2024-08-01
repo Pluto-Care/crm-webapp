@@ -14,14 +14,16 @@ import {SidebarMobile} from "./Sidebar";
 import {UPDATE_ORGANIZATION} from "@/permissions/permissions";
 import CreateOrgProfileDialog from "./CreateOrgProfileDialog";
 import UpdateOrgProfileDialog from "./UpdateOrgProfileDialog";
+import {useNavigate} from "react-router-dom";
 
 export default function Topbar() {
 	const {theme, setTheme} = useTheme();
 	const auth_context = useAuth();
+	const navigate = useNavigate();
 	const {loading, signOut} = useSignOut();
 
 	return (
-		<header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md flex h-14 items-center gap-4 border-b px-4 lg:h-[60px] lg:px-6">
+		<header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md flex h-14 items-center gap-4 px-4 lg:h-[60px] lg:px-6">
 			<SidebarMobile />
 			<div className="flex-1 w-full">
 				<h4>Welcome, {auth_context.user?.detail.first_name}</h4>
@@ -97,7 +99,12 @@ export default function Topbar() {
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
-						<DropdownMenuItem className="flex items-center gap-2 pr-8">
+						<DropdownMenuItem
+							className="flex items-center gap-2 pr-8"
+							onClick={() => {
+								navigate("/settings");
+							}}
+						>
 							<Settings className="size-4" />
 							Settings
 						</DropdownMenuItem>

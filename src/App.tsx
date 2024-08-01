@@ -36,6 +36,7 @@ const AdminAppointmentsDashboard = React.lazy(
 const AppointmentDetailPage = React.lazy(
 	() => import("@/pages/dashboard/admin/appointments/appointment/_index")
 );
+const SettingsPage = React.lazy(() => import("@/pages/dashboard/settings/_index"));
 
 export default function App() {
 	const {refresh, loading, error, isSuccess} = useRefresh();
@@ -87,6 +88,14 @@ export default function App() {
 						element={
 							<SW>
 								<Dashboard />
+							</SW>
+						}
+					/>
+					<Route
+						path={"/settings"}
+						element={
+							<SW>
+								<SettingsPage />
 							</SW>
 						}
 					/>

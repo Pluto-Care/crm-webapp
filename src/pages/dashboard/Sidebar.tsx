@@ -39,9 +39,9 @@ const adminMenu: SidebarMenuItem[] = [
 
 const forYouMenu: SidebarMenuItem[] = [
 	{
-		title: "Quick Summary",
+		title: "Dashboard",
 		Icon: ZapIcon,
-		path: "/dashboard/my/summary",
+		path: "/dashboard",
 	},
 	{
 		title: "My Patients",

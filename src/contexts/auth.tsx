@@ -24,6 +24,7 @@ import {
 	useContext,
 	useState,
 	useCallback,
+	useEffect,
 } from "react";
 
 type AuthValueType = {
@@ -55,10 +56,16 @@ const AuthProvider = (props: {children: ReactNode}): ReactElement => {
 
 	const org_query = useQuery({
 		queryKey: ["my_org"],
-		queryFn: () => getMyOrgAPI(),
+		queryFn: () => (user ? getMyOrgAPI() : Promise.reject("User is not signed in")),
 		refetchOnWindowFocus: false,
 		retry: 1,
 	});
+
+	useEffect(() => {
+		if (user && org_query.isError) {
+			org_query.refetch();
+		}
+	}, [user, org_query]);
 
 	return <AuthContext.Provider {...props} value={{user, setUser, org: org_query.data}} />;
 };

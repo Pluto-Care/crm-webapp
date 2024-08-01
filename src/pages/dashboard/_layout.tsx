@@ -12,7 +12,9 @@ export default function DashboardLayout(props: Props) {
 		<div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] relative">
 			<Sidebar />
 			<div className="flex flex-col">
-				<Topbar />
+				<div className="border-b">
+					<Topbar />
+				</div>
 				<main className="p-4 lg:p-6 max-w-[1600px]">
 					{/* Main section start */}
 					{props.children}
