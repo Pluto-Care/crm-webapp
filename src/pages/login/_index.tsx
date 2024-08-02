@@ -98,15 +98,15 @@ function LoginForm({location}: {location?: Location<any>}) {
 	};
 
 	function parseErrorDetail(error: ErrorType) {
-		{
-			error?.errors.code === "InvalidTOTPToken" || error?.errors.code === "InvalidTOTPTokenTooLong"
-				? (error?.errors.detail as string)
-				: "Something went wrong";
+		if (error && "errors" in error) {
+			if (error?.errors.code === "InvalidTOTPToken" || error?.errors.code === "InvalidTOTPTokenTooLong") {
+				return error?.errors.detail as string;
+			} else if (error?.errors.code === "LoginSerializerErrors") {
+				return error.errors.detail["non_field_errors"][0] as string;
+			}
+			return error.errors.title;
 		}
-		if (error?.errors.code === "LoginSerializerErrors") {
-			return error.errors.detail["non_field_errors"][0] as string;
-		}
-		return error.errors.title;
+		return "Something went wrong. Try again."
 	}
 
 	return (

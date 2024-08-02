@@ -165,7 +165,7 @@ function useSignIn() {
 					}
 				})
 				.catch((err) => {
-					if (
+					if (err.response &&
 						err.response.data.status === 401 &&
 						err.response.data.errors.code === "TOTPRequired"
 					) {
