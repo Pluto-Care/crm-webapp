@@ -97,7 +97,7 @@ export default function Sidebar() {
 					<nav className="grid items-start px-2 text-sm font-medium lg:px-4">
 						<SidebarItemMenu menuTitle="Manage" items={adminMenu} />
 						<SidebarItemMenu menuTitle="For You" items={forYouMenu} />
-						<SidebarItemMenu menuTitle="Talks" items={talksMenu} />
+						{/* <SidebarItemMenu menuTitle="Talks" items={talksMenu} /> */}
 					</nav>
 				</div>
 				<div className="mt-auto mb-4">
